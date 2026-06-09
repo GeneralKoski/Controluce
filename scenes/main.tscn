@@ -19,6 +19,15 @@ albedo_color = Color(0.3, 0.55, 1, 1)
 albedo_color = Color(1, 0.35, 0.3, 1)
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.055, 0.075, 0.16, 1)
+sky_horizon_color = Color(0.95, 0.52, 0.26, 1)
+sky_curve = 0.12
+sky_energy_multiplier = 1.1
+ground_bottom_color = Color(0.12, 0.1, 0.14, 1)
+ground_horizon_color = Color(0.88, 0.46, 0.24, 1)
+ground_curve = 0.08
+sun_angle_max = 40.0
+sun_curve = 0.08
 
 [sub_resource type="Sky" id="Sky_main"]
 sky_material = SubResource("ProceduralSkyMaterial_sky")
@@ -26,6 +35,25 @@ sky_material = SubResource("ProceduralSkyMaterial_sky")
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 2
 sky = SubResource("Sky_main")
+ambient_light_source = 3
+ambient_light_sky_contribution = 0.6
+ambient_light_energy = 2.2
+tonemap_mode = 3
+tonemap_exposure = 1.05
+ssao_enabled = true
+ssao_radius = 1.5
+ssao_intensity = 1.6
+glow_enabled = true
+glow_intensity = 0.7
+glow_strength = 1.0
+glow_bloom = 0.05
+glow_hdr_threshold = 0.95
+fog_enabled = true
+fog_light_color = Color(0.45, 0.32, 0.32, 1)
+fog_light_energy = 0.9
+fog_density = 0.006
+fog_sky_affect = 0.0
+fog_aerial_perspective = 0.5
 
 [node name="Main" type="Node" node_paths=PackedStringArray("Player1", "Player2", "Banner", "Fade", "Rope", "RoomSlot")]
 script = ExtResource("1_gm")
@@ -52,8 +80,19 @@ ViewP2 = NodePath("../Split/ViewP2")
 environment = SubResource("Environment_main")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="World"]
-transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 10, 0)
+transform = Transform3D(-1, 0, 0, 0, 0.965926, 0.258819, 0, 0.258819, -0.965926, 0, 10, 0)
+light_color = Color(1, 0.78, 0.55, 1)
+light_energy = 1.3
 shadow_enabled = true
+shadow_blur = 2.5
+directional_shadow_max_distance = 60.0
+directional_shadow_blend_splits = true
+
+[node name="FillLight" type="DirectionalLight3D" parent="World"]
+transform = Transform3D(0.866025, 0.25, -0.433013, 0, 0.866025, 0.5, 0.5, -0.433013, 0.75, 0, 10, 0)
+light_color = Color(0.45, 0.55, 0.85, 1)
+light_energy = 0.55
+sky_mode = 1
 
 [node name="RoomSlot" type="Node3D" parent="World"]
 
