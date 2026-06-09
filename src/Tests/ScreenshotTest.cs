@@ -17,6 +17,10 @@ public partial class ScreenshotTest : Node
     {
         _frames++;
 
+        // CONTROLUCE_SHOT_ROOM=n per fotografare una stanza diversa dalla prima.
+        if (_frames == 5 && int.TryParse(OS.GetEnvironment("CONTROLUCE_SHOT_ROOM"), out int room) && room > 0)
+            GetNode<Core.GameManager>("Main").LoadRoom(room);
+
         if (_frames == 150)
         {
             Save("Main/Split/ViewP1/ViewportP1", "/tmp/controluce_p1.png");
@@ -28,7 +32,7 @@ public partial class ScreenshotTest : Node
             rig.SetPhysicsProcess(false);
             var camera = rig.GetNode<Camera3D>("Camera3D");
             camera.CullMask = uint.MaxValue;
-            camera.GlobalPosition = new Vector3(26, 22, -19);
+            camera.GlobalPosition = new Vector3(30, 25, -19);
             camera.LookAt(new Vector3(0, 0, -19));
         }
 

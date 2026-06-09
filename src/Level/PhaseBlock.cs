@@ -4,19 +4,24 @@ using Godot;
 namespace Controluce.Level;
 
 [Tool]
-public partial class PhaseBlock : StaticBody3D
+public partial class PhaseBlock : StaticBody3D, IActivatable
 {
-    private static readonly Color BlueColor = new(0.25f, 0.5f, 1f);
-    private static readonly Color RedColor = new(1f, 0.3f, 0.25f);
-    private static readonly Color NeutralColor = new(0.55f, 0.57f, 0.6f);
-
     private Phase _phase = Phase.Blue;
     private Vector3 _size = new(2f, 0.5f, 2f);
     private bool _snapping;
+    private MeshInstance3D? _solidMesh;
+    private Phase _basePhase;
+    private bool _baseCaptured;
+    private float _toggleTimer;
 
     // Snap della posizione su griglia (solo in editor), per comporre stanze in fretta.
     [Export] public bool SnapToGrid { get; set; } = true;
     [Export] public float GridStep { get; set; } = 0.25f;
+
+    // Fase alternante: ogni TogglePeriod secondi il blocco passa Blu<->Rosso
+    // (0 = statico). ToggleOffset sfasa il timer per creare pattern.
+    [Export] public float TogglePeriod { get; set; }
+    [Export] public float ToggleOffset { get; set; }
 
     [Export]
     public Phase BlockPhase
@@ -36,7 +41,41 @@ public partial class PhaseBlock : StaticBody3D
     {
         if (Engine.IsEditorHint())
             SetNotifyLocalTransform(true);
+
+        if (!_baseCaptured)
+        {
+            _basePhase = _phase;
+            _baseCaptured = true;
+            _toggleTimer = ToggleOffset;
+        }
         Rebuild();
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        if (Engine.IsEditorHint() || TogglePeriod <= 0f || _phase == Phase.Neutral)
+            return;
+
+        _toggleTimer += (float)delta;
+        if (_toggleTimer >= TogglePeriod)
+        {
+            _toggleTimer -= TogglePeriod;
+            BlockPhase = PhaseLayers.Opposite(_phase);
+            return;
+        }
+
+        // Preavviso: il blocco "lampeggia" prima di cambiare fase.
+        float remaining = TogglePeriod - _toggleTimer;
+        if (_solidMesh != null)
+            _solidMesh.Transparency = remaining < 0.6f ? 0.3f + 0.3f * Mathf.Sin(_toggleTimer * 25f) : 0f;
+    }
+
+    // Attivata da una WeightPlate: fase opposta finché è attiva.
+    public void SetActivated(bool active)
+    {
+        if (_basePhase == Phase.Neutral)
+            return;
+        BlockPhase = active ? PhaseLayers.Opposite(_basePhase) : _basePhase;
     }
 
     public override void _Notification(int what)
@@ -50,51 +89,5 @@ public partial class PhaseBlock : StaticBody3D
         _snapping = false;
     }
 
-    private void Rebuild()
-    {
-        foreach (Node child in GetChildren())
-        {
-            RemoveChild(child);
-            child.QueueFree();
-        }
-
-        CollisionLayer = PhaseLayers.GeometryLayerFor(_phase);
-        CollisionMask = 0;
-
-        var shape = new CollisionShape3D { Shape = new BoxShape3D { Size = _size } };
-        AddChild(shape);
-
-        Color color = _phase switch
-        {
-            Phase.Blue => BlueColor,
-            Phase.Red => RedColor,
-            _ => NeutralColor,
-        };
-        var mesh = new BoxMesh { Size = _size };
-
-        var solid = new MeshInstance3D
-        {
-            Mesh = mesh,
-            Layers = PhaseLayers.SolidRenderLayerFor(_phase),
-            MaterialOverride = new StandardMaterial3D { AlbedoColor = color },
-        };
-        AddChild(solid);
-
-        if (_phase == Phase.Neutral)
-            return;
-
-        var ghost = new MeshInstance3D
-        {
-            Mesh = mesh,
-            Layers = PhaseLayers.GhostRenderLayerFor(_phase),
-            CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
-            MaterialOverride = new StandardMaterial3D
-            {
-                AlbedoColor = new Color(color.R, color.G, color.B, 0.15f),
-                Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
-                ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
-            },
-        };
-        AddChild(ghost);
-    }
+    private void Rebuild() => _solidMesh = PhaseGeometry.Build(this, _phase, _size);
 }

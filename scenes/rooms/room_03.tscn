@@ -1,0 +1,135 @@
+[gd_scene load_steps=7 format=3 uid="uid://cl0room030001"]
+
+[ext_resource type="Script" path="res://src/Level/PhaseBlock.cs" id="1_block"]
+[ext_resource type="Script" path="res://src/Level/ExitZone.cs" id="2_exit"]
+[ext_resource type="Script" path="res://src/Level/Checkpoint.cs" id="3_checkpoint"]
+[ext_resource type="Script" path="res://src/Level/WeightPlate.cs" id="4_plate"]
+[ext_resource type="Script" path="res://src/Level/MovingPlatform.cs" id="5_mover"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_exit"]
+size = Vector3(5, 3, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_checkpoint"]
+size = Vector3(8, 3, 2)
+
+[node name="Room03" type="Node3D"]
+
+[node name="SpawnA" type="Marker3D" parent="." groups=["spawn_a"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1, -2)
+
+[node name="SpawnB" type="Marker3D" parent="." groups=["spawn_b"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1, -2)
+
+[node name="Start" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -3)
+script = ExtResource("1_block")
+BlockPhase = 2
+Size = Vector3(8, 0.5, 6)
+
+[node name="Corridor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -9.5)
+script = ExtResource("1_block")
+BlockPhase = 2
+Size = Vector3(8, 0.5, 7)
+
+[node name="Door" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -8)
+script = ExtResource("5_mover")
+Offset = Vector3(0, -3.2, 0)
+Speed = 3.0
+BlockPhase = 2
+Size = Vector3(8, 3, 0.5)
+
+[node name="PlateA" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -5.5)
+script = ExtResource("4_plate")
+Targets = [NodePath("../Door")]
+
+[node name="PlateB" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -10.5)
+script = ExtResource("4_plate")
+Targets = [NodePath("../Door")]
+
+[node name="Checkpoint1" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12.5)
+script = ExtResource("3_checkpoint")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoint1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape3D_checkpoint")
+
+[node name="SpawnA" type="Marker3D" parent="Checkpoint1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1, 0)
+
+[node name="SpawnB" type="Marker3D" parent="Checkpoint1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1, 0)
+
+[node name="RedStep1" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.25, -14.5)
+script = ExtResource("1_block")
+BlockPhase = 1
+Size = Vector3(2, 0.5, 2)
+
+[node name="RedStep2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2.75, -16)
+script = ExtResource("1_block")
+BlockPhase = 1
+Size = Vector3(2, 0.5, 2)
+
+[node name="RedBridge" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 4.25, -21)
+script = ExtResource("1_block")
+BlockPhase = 1
+Size = Vector3(2, 0.5, 8)
+
+[node name="BlueCatch" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, -1.75, -24.5)
+script = ExtResource("1_block")
+Size = Vector3(4, 0.5, 4)
+
+[node name="Landing" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.75, -28)
+script = ExtResource("1_block")
+BlockPhase = 2
+Size = Vector3(6, 0.5, 4)
+
+[node name="Checkpoint2" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, -28)
+script = ExtResource("3_checkpoint")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoint2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape3D_checkpoint")
+
+[node name="SpawnA" type="Marker3D" parent="Checkpoint2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1, 0)
+
+[node name="SpawnB" type="Marker3D" parent="Checkpoint2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1, 0)
+
+[node name="Elevator" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.75, -32)
+script = ExtResource("5_mover")
+Offset = Vector3(0, 4, 0)
+Speed = 1.5
+BlockPhase = 2
+Size = Vector3(3, 0.5, 3)
+
+[node name="PlateBoth" type="Area3D" parent="Elevator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+script = ExtResource("4_plate")
+RequiredPlayers = 2
+Targets = [NodePath("..")]
+
+[node name="ExitPedestal" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, -36)
+script = ExtResource("1_block")
+BlockPhase = 2
+Size = Vector3(6, 0.5, 4)
+
+[node name="ExitZone" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -36)
+script = ExtResource("2_exit")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ExitZone"]
+shape = SubResource("BoxShape3D_exit")

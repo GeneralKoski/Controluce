@@ -1,0 +1,41 @@
+[gd_scene load_steps=7 format=3 uid="uid://cl0mechtest01"]
+
+[ext_resource type="Script" path="res://src/Tests/MechanicsTest.cs" id="1_test"]
+[ext_resource type="PackedScene" uid="uid://cl0playerscn1" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://src/Level/WeightPlate.cs" id="3_plate"]
+[ext_resource type="Script" path="res://src/Level/MovingPlatform.cs" id="4_mover"]
+[ext_resource type="Script" path="res://src/Level/PhaseBlock.cs" id="5_block"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(30, 1, 30)
+
+[node name="MechanicsTest" type="Node3D"]
+script = ExtResource("1_test")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Player1" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 0)
+
+[node name="Plate" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0)
+script = ExtResource("3_plate")
+Targets = [NodePath("../Mover")]
+
+[node name="Mover" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -5)
+script = ExtResource("4_mover")
+Offset = Vector3(0, 0, -4)
+Speed = 2.0
+BlockPhase = 2
+Size = Vector3(2, 0.5, 2)
+
+[node name="Toggle" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 5)
+script = ExtResource("5_block")
+TogglePeriod = 2.0
+Size = Vector3(2, 0.5, 2)

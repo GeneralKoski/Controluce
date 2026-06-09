@@ -1,11 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://cl0mainscene1"]
+[gd_scene load_steps=12 format=3 uid="uid://cl0mainscene1"]
 
 [ext_resource type="Script" path="res://src/Core/GameManager.cs" id="1_gm"]
 [ext_resource type="PackedScene" uid="uid://cl0playerscn1" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://src/Player/CameraRig.cs" id="3_camrig"]
 [ext_resource type="Script" path="res://src/Core/RopeConstraint.cs" id="5_rope"]
 [ext_resource type="Script" path="res://src/Core/RopeVisual.cs" id="6_ropevisual"]
-[ext_resource type="PackedScene" uid="uid://cl0room010001" path="res://scenes/rooms/room_01.tscn" id="7_room"]
 [ext_resource type="Script" path="res://src/Core/TensionIndicator.cs" id="8_tension"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p1"]
@@ -23,12 +22,15 @@ sky_material = SubResource("ProceduralSkyMaterial_sky")
 background_mode = 2
 sky = SubResource("Sky_main")
 
-[node name="Main" type="Node" node_paths=PackedStringArray("Player1", "Player2", "Banner", "Rope")]
+[node name="Main" type="Node" node_paths=PackedStringArray("Player1", "Player2", "Banner", "Fade", "Rope", "RoomSlot")]
 script = ExtResource("1_gm")
 Player1 = NodePath("World/Player1")
 Player2 = NodePath("World/Player2")
 Banner = NodePath("UI/Banner")
+Fade = NodePath("UI/Fade")
 Rope = NodePath("World/RopeVisual")
+RoomSlot = NodePath("World/RoomSlot")
+RoomPaths = PackedStringArray("res://scenes/rooms/room_01.tscn", "res://scenes/rooms/room_02.tscn", "res://scenes/rooms/room_03.tscn")
 
 [node name="World" type="Node3D" parent="."]
 
@@ -39,7 +41,7 @@ environment = SubResource("Environment_main")
 transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 10, 0)
 shadow_enabled = true
 
-[node name="Room01" parent="World" instance=ExtResource("7_room")]
+[node name="RoomSlot" type="Node3D" parent="World"]
 
 [node name="Player1" parent="World" instance=ExtResource("2_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 2, -2)
@@ -108,6 +110,16 @@ ViewPhase = 1
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 6, 9)
 
 [node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Fade" type="ColorRect" parent="UI"]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
 
 [node name="Banner" type="Label" parent="UI"]
 visible = false
