@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://cl0mainscene1"]
+[gd_scene load_steps=12 format=3 uid="uid://cl0mainscene1"]
 
-[ext_resource type="PackedScene" uid="uid://cl0playerscn1" path="res://scenes/player.tscn" id="1_player"]
-[ext_resource type="Script" path="res://src/Player/CameraRig.cs" id="2_camrig"]
+[ext_resource type="Script" path="res://src/Core/GameManager.cs" id="1_gm"]
+[ext_resource type="PackedScene" uid="uid://cl0playerscn1" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://src/Player/CameraRig.cs" id="3_camrig"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(24, 1, 24)
@@ -12,6 +13,12 @@ size = Vector3(24, 1, 24)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
 albedo_color = Color(0.35, 0.38, 0.42, 1)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p1"]
+albedo_color = Color(0.3, 0.55, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p2"]
+albedo_color = Color(1, 0.35, 0.3, 1)
+
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 
 [sub_resource type="Sky" id="Sky_main"]
@@ -21,31 +28,79 @@ sky_material = SubResource("ProceduralSkyMaterial_sky")
 background_mode = 2
 sky = SubResource("Sky_main")
 
-[node name="Main" type="Node3D"]
+[node name="Main" type="Node"]
+script = ExtResource("1_gm")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="World" type="Node3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="World"]
 environment = SubResource("Environment_main")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="World"]
 transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 10, 0)
 shadow_enabled = true
 
-[node name="Floor" type="StaticBody3D" parent="."]
+[node name="Floor" type="StaticBody3D" parent="World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Floor"]
 shape = SubResource("BoxShape3D_floor")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="World/Floor"]
 mesh = SubResource("BoxMesh_floor")
 surface_material_override/0 = SubResource("StandardMaterial3D_floor")
 
-[node name="Player" parent="." instance=ExtResource("1_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+[node name="Player1" parent="World" instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2, 0)
 
-[node name="CameraRig" type="Node3D" parent="." node_paths=PackedStringArray("Target")]
-script = ExtResource("2_camrig")
-Target = NodePath("../Player")
+[node name="MeshInstance3D" parent="World/Player1"]
+surface_material_override/0 = SubResource("StandardMaterial3D_p1")
 
-[node name="Camera3D" type="Camera3D" parent="CameraRig"]
+[node name="Player2" parent="World" instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0)
+
+[node name="MeshInstance3D" parent="World/Player2"]
+surface_material_override/0 = SubResource("StandardMaterial3D_p2")
+
+[node name="PlayerInput" parent="World/Player2"]
+Prefix = "p2"
+
+[node name="Split" type="HBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="ViewP1" type="SubViewportContainer" parent="Split"]
+layout_mode = 2
+size_flags_horizontal = 3
+stretch = true
+
+[node name="ViewportP1" type="SubViewport" parent="Split/ViewP1"]
+handle_input_locally = false
+render_target_update_mode = 4
+
+[node name="CameraRig" type="Node3D" parent="Split/ViewP1/ViewportP1" node_paths=PackedStringArray("Target")]
+script = ExtResource("3_camrig")
+Target = NodePath("../../../../World/Player1")
+
+[node name="Camera3D" type="Camera3D" parent="Split/ViewP1/ViewportP1/CameraRig"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 6, 9)
+
+[node name="ViewP2" type="SubViewportContainer" parent="Split"]
+layout_mode = 2
+size_flags_horizontal = 3
+stretch = true
+
+[node name="ViewportP2" type="SubViewport" parent="Split/ViewP2"]
+handle_input_locally = false
+render_target_update_mode = 4
+
+[node name="CameraRig" type="Node3D" parent="Split/ViewP2/ViewportP2" node_paths=PackedStringArray("Target")]
+script = ExtResource("3_camrig")
+Target = NodePath("../../../../World/Player2")
+
+[node name="Camera3D" type="Camera3D" parent="Split/ViewP2/ViewportP2/CameraRig"]
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 6, 9)
