@@ -1,0 +1,117 @@
+[gd_scene load_steps=6 format=3 uid="uid://cl0room040001"]
+
+[ext_resource type="Script" path="res://src/Level/PhaseBlock.cs" id="1_block"]
+[ext_resource type="Script" path="res://src/Level/ExitZone.cs" id="2_exit"]
+[ext_resource type="Script" path="res://src/Level/Checkpoint.cs" id="3_checkpoint"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_exit"]
+size = Vector3(6, 3, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_checkpoint"]
+size = Vector3(8, 3, 3)
+
+[node name="Room04" type="Node3D"]
+
+[node name="SpawnA" type="Marker3D" parent="." groups=["spawn_a"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1, -2)
+
+[node name="SpawnB" type="Marker3D" parent="." groups=["spawn_b"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1, -2)
+
+[node name="Start" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -3)
+script = ExtResource("1_block")
+BlockPhase = 2
+Size = Vector3(8, 0.5, 6)
+
+[node name="BlueStep1" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.75, -7)
+script = ExtResource("1_block")
+Size = Vector3(2, 0.5, 2)
+
+[node name="BlueStep2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 2.25, -8.5)
+script = ExtResource("1_block")
+Size = Vector3(2, 0.5, 2)
+
+[node name="PonteAlto" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 3.75, -16)
+script = ExtResource("1_block")
+BlockPhase = 2
+Size = Vector3(2, 0.5, 12)
+
+[node name="Approdo" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -22.5)
+script = ExtResource("1_block")
+BlockPhase = 2
+Size = Vector3(8, 0.5, 8)
+
+[node name="Checkpoint1" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -22.5)
+script = ExtResource("3_checkpoint")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoint1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape3D_checkpoint")
+
+[node name="SpawnA" type="Marker3D" parent="Checkpoint1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.75, 0)
+
+[node name="SpawnB" type="Marker3D" parent="Checkpoint1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.75, 0)
+
+[node name="ToggleBlu1" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.5, -28.5)
+script = ExtResource("1_block")
+TogglePeriod = 2.4
+Size = Vector3(2, 0.5, 2)
+
+[node name="ToggleBlu2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.5, -31)
+script = ExtResource("1_block")
+TogglePeriod = 2.4
+ToggleOffset = 0.8
+Size = Vector3(2, 0.5, 2)
+
+[node name="ToggleBlu3" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.5, -33.5)
+script = ExtResource("1_block")
+TogglePeriod = 2.4
+ToggleOffset = 1.6
+Size = Vector3(2, 0.5, 2)
+
+[node name="ToggleRosso1" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.5, -28.5)
+script = ExtResource("1_block")
+BlockPhase = 1
+TogglePeriod = 2.4
+Size = Vector3(2, 0.5, 2)
+
+[node name="ToggleRosso2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.5, -31)
+script = ExtResource("1_block")
+BlockPhase = 1
+TogglePeriod = 2.4
+ToggleOffset = 0.8
+Size = Vector3(2, 0.5, 2)
+
+[node name="ToggleRosso3" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.5, -33.5)
+script = ExtResource("1_block")
+BlockPhase = 1
+TogglePeriod = 2.4
+ToggleOffset = 1.6
+Size = Vector3(2, 0.5, 2)
+
+[node name="Uscita" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -37)
+script = ExtResource("1_block")
+BlockPhase = 2
+Size = Vector3(8, 0.5, 4)
+
+[node name="ExitZone" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -37)
+script = ExtResource("2_exit")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ExitZone"]
+shape = SubResource("BoxShape3D_exit")
