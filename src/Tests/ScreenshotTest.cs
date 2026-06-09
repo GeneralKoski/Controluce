@@ -33,6 +33,21 @@ public partial class ScreenshotTest : Node
         if (_frames == 5 && int.TryParse(OS.GetEnvironment("CONTROLUCE_SHOT_ROOM"), out int room) && room > 0)
             GetNode<Core.GameManager>("Main").LoadRoom(room);
 
+        // CONTROLUCE_SHOT_SPREAD=1: porta P2 fuori dalla visuale di P1
+        // (camera girata dall'altra parte) per vedere l'indicatore partner.
+        if (_frames == 100 && OS.GetEnvironment("CONTROLUCE_SHOT_SPREAD") == "1")
+        {
+            var p1 = GetNode<Node3D>("Main/World/Player1");
+            var p2 = GetNode<Node3D>("Main/World/Player2");
+            p2.GlobalPosition = p1.GlobalPosition + new Vector3(0, -2f, -5f);
+            p2.SetPhysicsProcess(false);
+            GetNode<Node3D>("Main/World/Rope").SetPhysicsProcess(false);
+
+            var rig = GetNode<Node3D>("Main/Split/ViewP1/ViewportP1/CameraRig");
+            rig.SetPhysicsProcess(false);
+            rig.Rotation = new Vector3(-0.3f, Mathf.Pi, 0);
+        }
+
         if (_frames == 150)
         {
             Save("Main/Split/ViewP1/ViewportP1", "/tmp/controluce_p1.png");

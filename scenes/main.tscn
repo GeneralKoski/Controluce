@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cl0mainscene1"]
+[gd_scene load_steps=14 format=3 uid="uid://cl0mainscene1"]
 
 [ext_resource type="Script" path="res://src/Core/GameManager.cs" id="1_gm"]
 [ext_resource type="PackedScene" uid="uid://cl0playerscn1" path="res://scenes/player.tscn" id="2_player"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://src/Core/TensionIndicator.cs" id="8_tension"]
 [ext_resource type="Script" path="res://src/Core/PauseMenu.cs" id="9_pause"]
 [ext_resource type="Script" path="res://src/Net/NetworkManager.cs" id="10_net"]
+[ext_resource type="Script" path="res://src/Player/PartnerIndicator.cs" id="11_partner"]
 
 [sub_resource type="Theme" id="Theme_ui"]
 default_font_size = 28
@@ -138,6 +139,18 @@ UseMouse = true
 [node name="Camera3D" type="Camera3D" parent="Split/ViewP1/ViewportP1/CameraRig"]
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 6, 9)
 
+[node name="PartnerIndicator" type="Control" parent="Split/ViewP1" node_paths=PackedStringArray("Camera", "Partner")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("11_partner")
+Camera = NodePath("../ViewportP1/CameraRig/Camera3D")
+Partner = NodePath("../../../World/Player2")
+
 [node name="ViewP2" type="SubViewportContainer" parent="Split"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -155,6 +168,18 @@ UseStick = true
 
 [node name="Camera3D" type="Camera3D" parent="Split/ViewP2/ViewportP2/CameraRig"]
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 6, 9)
+
+[node name="PartnerIndicator" type="Control" parent="Split/ViewP2" node_paths=PackedStringArray("Camera", "Partner")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("11_partner")
+Camera = NodePath("../ViewportP2/CameraRig/Camera3D")
+Partner = NodePath("../../../World/Player1")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
