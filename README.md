@@ -16,9 +16,14 @@ dotnet build
 # Apri l'editor
 godot-mono --editor --path .
 
-# Avvia il gioco (split-screen locale)
+# Avvia il gioco (parte dal menu principale)
 godot-mono --path .
 ```
+
+Dal menu: **Gioca** (split-screen), **Continua** (riprende dall'ultima stanza
+raggiunta, salvata in `user://save.cfg`), **Online** (ospita o unisciti via
+IP/porta), **Opzioni** (volume, sensibilità mouse/stick, modalità respawn —
+salvate in `user://settings.cfg`).
 
 ## Online co-op (server authoritative)
 
@@ -55,7 +60,10 @@ In alternativa: variabili d'ambiente `CONTROLUCE_MODE` (server/client),
 
 Extra oltre le milestone: progressione su 3 stanze con transizioni, pedane a
 peso, piattaforme mobili/porte/ascensori, blocchi a fase alternante, tira-corda
-con feedback, dondolio controllabile, menu pausa, musica ambient.
+con feedback, dondolio controllabile e salto da appeso, coyote time + jump
+buffer, camera orbitale con occlusione, menu principale con lobby online,
+opzioni e salvataggio progressi, menu pausa, musica ambient, occhi/particelle
+sui player e griglia procedurale.
 
 ## Level design
 
@@ -77,7 +85,7 @@ Per prototipare una stanza nuova in pochi minuti:
 | --- | --- | --- |
 | Movimento (relativo alla camera) | WASD | Stick sinistro gamepad / Frecce |
 | Ruota camera | Mouse | Stick destro gamepad |
-| Salto | Spazio | Tasto A gamepad / Invio |
+| Salto (anche da appeso, con coyote time e buffer) | Spazio | Tasto A gamepad / Invio |
 | Ping "guarda qui" | E | Tasto B gamepad / Shift |
 | Tira la corda (tieni premuto) | Q | Tasto X gamepad / Ctrl |
 | Dondola (da appeso) | A/D nel verso del moto | Stick nel verso del moto |

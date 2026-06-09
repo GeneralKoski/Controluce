@@ -32,6 +32,10 @@ public partial class CameraRig : Node3D
         _yaw = Rotation.Y;
         _pitch = Rotation.X;
 
+        Settings.Load();
+        MouseSensitivity = Settings.MouseSensitivity;
+        StickSpeed = Settings.StickSpeed;
+
         if (UseMouse)
             Input.MouseMode = Input.MouseModeEnum.Captured;
     }

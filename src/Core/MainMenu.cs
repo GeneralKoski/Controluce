@@ -1,0 +1,93 @@
+using Godot;
+
+namespace Controluce.Core;
+
+public partial class MainMenu : Control
+{
+    private const string GameScene = "res://scenes/main.tscn";
+
+    private Control _home = null!;
+    private Control _online = null!;
+    private Control _options = null!;
+
+    public override void _Ready()
+    {
+        Input.MouseMode = Input.MouseModeEnum.Visible;
+        Settings.Load();
+        Progress.Load();
+
+        _home = GetNode<Control>("Home");
+        _online = GetNode<Control>("Online");
+        _options = GetNode<Control>("Options");
+
+        var continueButton = GetNode<Button>("Home/Continua");
+        continueButton.Disabled = Progress.LastRoom <= 0;
+        continueButton.Text = Progress.LastRoom > 0
+            ? $"Continua (stanza {Progress.LastRoom + 1})"
+            : "Continua";
+
+        GetNode<Button>("Home/Gioca").Pressed += () => StartGame(null, 0);
+        continueButton.Pressed += () => StartGame(null, Progress.LastRoom);
+        GetNode<Button>("Home/Online").Pressed += () => ShowPanel(_online);
+        GetNode<Button>("Home/Opzioni").Pressed += () => ShowPanel(_options);
+        GetNode<Button>("Home/Esci").Pressed += () => GetTree().Quit();
+
+        GetNode<Button>("Online/Ospita").Pressed += () => StartGame("server", 0);
+        GetNode<Button>("Online/Unisciti").Pressed += () => StartGame("client", 0);
+        GetNode<Button>("Online/Indietro").Pressed += () => ShowPanel(_home);
+
+        SetupOptions();
+        GetNode<Button>("Options/Indietro").Pressed += () =>
+        {
+            Settings.Save();
+            ShowPanel(_home);
+        };
+    }
+
+    private void StartGame(string? mode, int startRoom)
+    {
+        GameConfig.Mode = mode;
+        GameConfig.StartRoom = startRoom;
+
+        if (mode != null)
+        {
+            string host = GetNode<LineEdit>("Online/Host").Text.Trim();
+            if (host.Length > 0)
+                GameConfig.Host = host;
+            if (int.TryParse(GetNode<LineEdit>("Online/Porta").Text.Trim(), out int port))
+                GameConfig.Port = port;
+        }
+
+        GetTree().ChangeSceneToFile(GameScene);
+    }
+
+    private void ShowPanel(Control panel)
+    {
+        _home.Visible = panel == _home;
+        _online.Visible = panel == _online;
+        _options.Visible = panel == _options;
+    }
+
+    private void SetupOptions()
+    {
+        var volume = GetNode<HSlider>("Options/VolumeRow/Volume");
+        volume.Value = Settings.MasterVolume * 100.0;
+        volume.ValueChanged += value =>
+        {
+            Settings.MasterVolume = (float)(value / 100.0);
+            Settings.ApplyVolume();
+        };
+
+        var mouse = GetNode<HSlider>("Options/MouseRow/Mouse");
+        mouse.Value = Settings.MouseSensitivity * 1000.0;
+        mouse.ValueChanged += value => Settings.MouseSensitivity = (float)(value / 1000.0);
+
+        var stick = GetNode<HSlider>("Options/StickRow/Stick");
+        stick.Value = Settings.StickSpeed;
+        stick.ValueChanged += value => Settings.StickSpeed = (float)value;
+
+        var respawn = GetNode<CheckBox>("Options/RespawnBoth");
+        respawn.ButtonPressed = Settings.RespawnBoth;
+        respawn.Toggled += pressed => Settings.RespawnBoth = pressed;
+    }
+}

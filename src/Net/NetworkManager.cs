@@ -97,6 +97,8 @@ public partial class NetworkManager : Node
             Multiplayer.MultiplayerPeer = peer;
             GD.Print($"Connessione a {host}:{port}...");
             Multiplayer.ConnectedToServer += () => GD.Print("Connesso al server");
+            Multiplayer.ServerDisconnected += ReturnToMenu;
+            Multiplayer.ConnectionFailed += ReturnToMenu;
 
             // Niente simulazione locale: si renderizza lo stato del server.
             Player1?.SetPhysicsProcess(false);
@@ -238,6 +240,16 @@ public partial class NetworkManager : Node
             _buffer.RemoveAt(0);
     }
 
+    private void ReturnToMenu()
+    {
+        GD.Print("Connessione persa: ritorno al menu");
+        GameConfig.Mode = null;
+        Multiplayer.MultiplayerPeer = null;
+        GetTree().Paused = false;
+        Input.MouseMode = Input.MouseModeEnum.Visible;
+        GetTree().ChangeSceneToFile("res://scenes/menu.tscn");
+    }
+
     private void RefreshMovers()
     {
         _movers.Clear();
@@ -257,12 +269,20 @@ public partial class NetworkManager : Node
 
     private void ParseConfig(out string host, out int port)
     {
-        host = OS.GetEnvironment("CONTROLUCE_HOST");
-        if (string.IsNullOrEmpty(host))
-            host = "127.0.0.1";
-        port = int.TryParse(OS.GetEnvironment("CONTROLUCE_PORT"), out int envPort) ? envPort : 7777;
+        // Base: scelte fatte nel menu; CLI e variabili d'ambiente le sovrascrivono.
+        string mode = GameConfig.Mode ?? "";
+        host = GameConfig.Host;
+        port = GameConfig.Port;
 
-        string mode = OS.GetEnvironment("CONTROLUCE_MODE").ToLowerInvariant();
+        string envHost = OS.GetEnvironment("CONTROLUCE_HOST");
+        if (!string.IsNullOrEmpty(envHost))
+            host = envHost;
+        if (int.TryParse(OS.GetEnvironment("CONTROLUCE_PORT"), out int envPort))
+            port = envPort;
+
+        string envMode = OS.GetEnvironment("CONTROLUCE_MODE").ToLowerInvariant();
+        if (!string.IsNullOrEmpty(envMode))
+            mode = envMode;
 
         string[] args = OS.GetCmdlineUserArgs();
         for (int i = 0; i < args.Length; i++)

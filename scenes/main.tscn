@@ -209,6 +209,10 @@ text = "Riprendi"
 layout_mode = 2
 text = "Ricomincia stanza"
 
+[node name="Menu" type="Button" parent="UI/PauseMenu/Panel/VBox"]
+layout_mode = 2
+text = "Menu principale"
+
 [node name="Quit" type="Button" parent="UI/PauseMenu/Panel/VBox"]
 layout_mode = 2
 text = "Esci"

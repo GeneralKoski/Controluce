@@ -12,6 +12,7 @@ public partial class PauseMenu : Control
         Visible = false;
         GetNode<Button>("Panel/VBox/Resume").Pressed += TogglePause;
         GetNode<Button>("Panel/VBox/Restart").Pressed += OnRestart;
+        GetNode<Button>("Panel/VBox/Menu").Pressed += OnMainMenu;
         GetNode<Button>("Panel/VBox/Quit").Pressed += () => GetTree().Quit();
     }
 
@@ -40,5 +41,14 @@ public partial class PauseMenu : Control
     {
         Game?.RestartRoom();
         TogglePause();
+    }
+
+    private void OnMainMenu()
+    {
+        GameConfig.Mode = null;
+        Multiplayer.MultiplayerPeer = null;
+        GetTree().Paused = false;
+        Input.MouseMode = Input.MouseModeEnum.Visible;
+        GetTree().ChangeSceneToFile("res://scenes/menu.tscn");
     }
 }

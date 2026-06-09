@@ -38,6 +38,9 @@ public partial class GameManager : Node
         // il root non deve renderizzarlo (lo coprono i due schermi).
         GetViewport().Disable3D = true;
 
+        Settings.Load();
+        RespawnBothPlayers = Settings.RespawnBoth;
+
         var music = new AudioStreamPlayer
         {
             Stream = AudioSynth.AmbientPad(),
@@ -47,7 +50,7 @@ public partial class GameManager : Node
         AddChild(music);
         music.Play();
 
-        LoadRoom(0);
+        LoadRoom(Mathf.Clamp(GameConfig.StartRoom, 0, Mathf.Max(RoomPaths.Length - 1, 0)));
     }
 
     public override void _PhysicsProcess(double delta)
@@ -95,6 +98,9 @@ public partial class GameManager : Node
             if (node is Checkpoint checkpoint)
                 checkpoint.Activated += OnCheckpointActivated;
         }
+
+        if (!NetworkPassive)
+            Progress.RecordRoom(index);
 
         _spawnA = SpawnPosition(Player1, "spawn_a");
         _spawnB = SpawnPosition(Player2, "spawn_b");
