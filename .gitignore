@@ -1,0 +1,14 @@
+# Godot
+.godot/
+*.translation
+export_presets.cfg
+
+# .NET
+bin/
+obj/
+*.user
+.mono/
+mono_crash.*.json
+
+# macOS
+.DS_Store
