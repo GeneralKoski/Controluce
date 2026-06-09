@@ -35,6 +35,20 @@ godot-mono --path .
 - [ ] M10 — Tooling level design
 - [ ] M11 — Refactor authoritative
 
+## Level design
+
+Per prototipare una stanza nuova in pochi minuti:
+
+1. Duplica `scenes/rooms/room_template.tscn` e rinominala (`room_02.tscn`, ...).
+2. Componi la geometria con nodi `StaticBody3D` + script `PhaseBlock`:
+   - `BlockPhase`: `Blue` (solo P1), `Red` (solo P2), `Neutral` (entrambi);
+   - `Size`: dimensioni del box (collisione e mesh si aggiornano da sole);
+   - la posizione fa snap su griglia da 0.25 m (disattivabile con `SnapToGrid`).
+3. Tieni i due percorsi entro la lunghezza della corda (6 m di default).
+4. Aggiungi `Checkpoint` (con i due Marker3D `SpawnA`/`SpawnB`) dopo ogni passaggio rischioso.
+5. L'`ExitZone` scatta solo quando entrambi i player sono dentro.
+6. Per provarla: in `scenes/main.tscn` sostituisci l'istanza `Room01` con la tua stanza.
+
 ## Controlli
 
 | Azione | Player 1 | Player 2 |

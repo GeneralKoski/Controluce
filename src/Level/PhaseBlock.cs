@@ -12,6 +12,11 @@ public partial class PhaseBlock : StaticBody3D
 
     private Phase _phase = Phase.Blue;
     private Vector3 _size = new(2f, 0.5f, 2f);
+    private bool _snapping;
+
+    // Snap della posizione su griglia (solo in editor), per comporre stanze in fretta.
+    [Export] public bool SnapToGrid { get; set; } = true;
+    [Export] public float GridStep { get; set; } = 0.25f;
 
     [Export]
     public Phase BlockPhase
@@ -27,7 +32,23 @@ public partial class PhaseBlock : StaticBody3D
         set { _size = value; if (IsInsideTree()) Rebuild(); }
     }
 
-    public override void _Ready() => Rebuild();
+    public override void _Ready()
+    {
+        if (Engine.IsEditorHint())
+            SetNotifyLocalTransform(true);
+        Rebuild();
+    }
+
+    public override void _Notification(int what)
+    {
+        if (what != NotificationLocalTransformChanged
+            || !Engine.IsEditorHint() || !SnapToGrid || _snapping || GridStep <= 0f)
+            return;
+
+        _snapping = true;
+        Position = (Position / GridStep).Round() * GridStep;
+        _snapping = false;
+    }
 
     private void Rebuild()
     {
