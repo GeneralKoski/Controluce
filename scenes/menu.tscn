@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://cl0menuscene1"]
+[gd_scene load_steps=3 format=3 uid="uid://cl0menuscene1"]
 
 [ext_resource type="Script" path="res://src/Core/MainMenu.cs" id="1_menu"]
+
+[sub_resource type="Theme" id="Theme_menu"]
+default_font_size = 28
 
 [node name="Menu" type="Control"]
 layout_mode = 3
@@ -9,6 +12,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = SubResource("Theme_menu")
 script = ExtResource("1_menu")
 
 [node name="Background" type="ColorRect" parent="."]
@@ -24,12 +28,12 @@ color = Color(0.09, 0.09, 0.12, 1)
 layout_mode = 1
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -300
-offset_right = 300
-offset_top = 60
-offset_bottom = 140
+offset_left = -400
+offset_right = 400
+offset_top = 90
+offset_bottom = 200
 grow_horizontal = 2
-theme_override_font_sizes/font_size = 56
+theme_override_font_sizes/font_size = 84
 text = "CONTROLUCE"
 horizontal_alignment = 1
 
@@ -37,10 +41,10 @@ horizontal_alignment = 1
 layout_mode = 1
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -300
-offset_right = 300
-offset_top = 140
-offset_bottom = 170
+offset_left = -400
+offset_right = 400
+offset_top = 200
+offset_bottom = 240
 grow_horizontal = 2
 theme_override_colors/font_color = Color(0.6, 0.6, 0.68, 1)
 text = "due percezioni, una corda"
@@ -52,13 +56,13 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -130
-offset_top = -90
-offset_right = 130
-offset_bottom = 150
+offset_left = -220
+offset_top = -130
+offset_right = 220
+offset_bottom = 230
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 18
 
 [node name="Gioca" type="Button" parent="Home"]
 layout_mode = 2
@@ -87,17 +91,17 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -160
-offset_top = -110
-offset_right = 160
-offset_bottom = 150
+offset_left = -260
+offset_top = -190
+offset_right = 260
+offset_bottom = 230
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 14
 
 [node name="Etichetta" type="Label" parent="Online"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 40
 text = "Online co-op"
 horizontal_alignment = 1
 
@@ -136,17 +140,17 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -180
-offset_top = -120
-offset_right = 180
-offset_bottom = 160
+offset_left = -320
+offset_top = -190
+offset_right = 320
+offset_bottom = 240
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 14
 
 [node name="Etichetta" type="Label" parent="Options"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 40
 text = "Opzioni"
 horizontal_alignment = 1
 
@@ -155,7 +159,7 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="Options/VolumeRow"]
 layout_mode = 2
-custom_minimum_size = Vector2(140, 0)
+custom_minimum_size = Vector2(280, 0)
 text = "Volume"
 
 [node name="Volume" type="HSlider" parent="Options/VolumeRow"]
@@ -168,7 +172,7 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="Options/MouseRow"]
 layout_mode = 2
-custom_minimum_size = Vector2(140, 0)
+custom_minimum_size = Vector2(280, 0)
 text = "Sensibilità mouse"
 
 [node name="Mouse" type="HSlider" parent="Options/MouseRow"]
@@ -183,7 +187,7 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="Options/StickRow"]
 layout_mode = 2
-custom_minimum_size = Vector2(140, 0)
+custom_minimum_size = Vector2(280, 0)
 text = "Velocità stick"
 
 [node name="Stick" type="HSlider" parent="Options/StickRow"]
