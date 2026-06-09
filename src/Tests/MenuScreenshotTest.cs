@@ -9,7 +9,16 @@ public partial class MenuScreenshotTest : Node
 
     public override void _Ready()
     {
-        AddChild(GD.Load<PackedScene>("res://scenes/menu.tscn").Instantiate());
+        var menu = GD.Load<PackedScene>("res://scenes/menu.tscn").Instantiate();
+        AddChild(menu);
+
+        // CONTROLUCE_SHOT_PANEL=Online|Options|Skins per fotografare un pannello.
+        string panel = OS.GetEnvironment("CONTROLUCE_SHOT_PANEL");
+        if (panel.Length > 0 && menu.GetNodeOrNull<Control>(panel) is { } target)
+        {
+            menu.GetNode<Control>("Home").Visible = false;
+            target.Visible = true;
+        }
     }
 
     public override void _Process(double delta)

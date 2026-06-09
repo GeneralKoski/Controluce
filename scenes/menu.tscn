@@ -76,6 +76,10 @@ text = "Continua"
 layout_mode = 2
 text = "Online..."
 
+[node name="Personaggi" type="Button" parent="Home"]
+layout_mode = 2
+text = "Personaggi"
+
 [node name="Opzioni" type="Button" parent="Home"]
 layout_mode = 2
 text = "Opzioni"
@@ -130,6 +134,66 @@ layout_mode = 2
 text = "Unisciti (giochi come P2)"
 
 [node name="Indietro" type="Button" parent="Online"]
+layout_mode = 2
+text = "Indietro"
+
+[node name="Skins" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320
+offset_top = -170
+offset_right = 320
+offset_bottom = 210
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+
+[node name="Etichetta" type="Label" parent="Skins"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Personaggi"
+horizontal_alignment = 1
+
+[node name="P1Row" type="HBoxContainer" parent="Skins"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Skins/P1Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(280, 0)
+text = "Skin Player 1"
+
+[node name="P1Skin" type="OptionButton" parent="Skins/P1Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="P2Row" type="HBoxContainer" parent="Skins"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Skins/P2Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(280, 0)
+text = "Skin Player 2"
+
+[node name="P2Skin" type="OptionButton" parent="Skins/P2Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SwapRoles" type="CheckBox" parent="Skins"]
+layout_mode = 2
+text = "Scambia ruoli (P1 rosso, P2 blu)"
+
+[node name="Nota" type="Label" parent="Skins"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.68, 1)
+theme_override_font_sizes/font_size = 20
+text = "Online: l'ospite usa la skin Player 2; i ruoli li decide chi ospita."
+autowrap_mode = 2
+
+[node name="Indietro" type="Button" parent="Skins"]
 layout_mode = 2
 text = "Indietro"
 

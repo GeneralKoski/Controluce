@@ -33,6 +33,7 @@ public partial class NetworkManager : Node
 
 
     private Mode _mode = Mode.Local;
+    private int _clientSkin2 = -1;
     private CameraRig? _clientCamera;
     private Vector2 _remoteMove;
     private bool _remoteJump;
@@ -55,6 +56,7 @@ public partial class NetworkManager : Node
         // Il server consegna il comando remoto a P2 prima dello step dei player.
         ProcessPhysicsPriority = -5;
 
+        Settings.Load();
         ParseConfig(out string host, out int port);
         if (_mode == Mode.Local)
             return;
@@ -85,6 +87,9 @@ public partial class NetworkManager : Node
                 Player1.Pinged += (pos, phase) => Rpc(MethodName.RemotePing, pos, phase);
             if (Player2 != null)
                 Player2.Pinged += (pos, phase) => Rpc(MethodName.RemotePing, pos, phase);
+
+            // All'ingresso dell'ospite gli si comunicano skin e ruoli correnti.
+            Multiplayer.PeerConnected += _ => SendAppearance();
         }
         else
         {
@@ -96,7 +101,12 @@ public partial class NetworkManager : Node
             }
             Multiplayer.MultiplayerPeer = peer;
             GD.Print($"Connessione a {host}:{port}...");
-            Multiplayer.ConnectedToServer += () => GD.Print("Connesso al server");
+            Multiplayer.ConnectedToServer += () =>
+            {
+                GD.Print("Connesso al server");
+                // L'ospite gioca P2: annuncia la propria skin P2 al server.
+                RpcId(1, MethodName.AnnounceSkin, Settings.SkinP2);
+            };
             Multiplayer.ServerDisconnected += ReturnToMenu;
             Multiplayer.ConnectionFailed += ReturnToMenu;
 
@@ -182,6 +192,31 @@ public partial class NetworkManager : Node
         _buffer.Add(new Snap(Now(), room, p1Pos, p1Vel, p2Pos, p2Vel, ropeLength, ropeTension, movers));
         if (_buffer.Count > 120)
             _buffer.RemoveRange(0, _buffer.Count - 120);
+    }
+
+    // Aspetto concordato: skin P1 e ruoli dell'host, skin P2 dell'ospite.
+    private void SendAppearance()
+    {
+        int skin2 = _clientSkin2 >= 0 ? _clientSkin2 : Settings.SkinP2;
+        Game?.ApplyAppearance(Settings.SkinP1, skin2, Settings.SwapRoles);
+        Rpc(MethodName.SyncAppearance, Settings.SkinP1, skin2, Settings.SwapRoles);
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void AnnounceSkin(int skin)
+    {
+        if (_mode != Mode.Server)
+            return;
+
+        _clientSkin2 = skin;
+        SendAppearance();
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.Authority, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void SyncAppearance(int skin1, int skin2, bool swapRoles)
+    {
+        if (_mode == Mode.Client)
+            Game?.ApplyAppearance(skin1, skin2, swapRoles);
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]

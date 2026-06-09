@@ -9,6 +9,7 @@ public partial class MainMenu : Control
     private Control _home = null!;
     private Control _online = null!;
     private Control _options = null!;
+    private Control _skins = null!;
 
     public override void _Ready()
     {
@@ -19,6 +20,7 @@ public partial class MainMenu : Control
         _home = GetNode<Control>("Home");
         _online = GetNode<Control>("Online");
         _options = GetNode<Control>("Options");
+        _skins = GetNode<Control>("Skins");
 
         var continueButton = GetNode<Button>("Home/Continua");
         continueButton.Disabled = Progress.LastRoom <= 0;
@@ -29,6 +31,7 @@ public partial class MainMenu : Control
         GetNode<Button>("Home/Gioca").Pressed += () => StartGame(null, 0);
         continueButton.Pressed += () => StartGame(null, Progress.LastRoom);
         GetNode<Button>("Home/Online").Pressed += () => ShowPanel(_online);
+        GetNode<Button>("Home/Personaggi").Pressed += () => ShowPanel(_skins);
         GetNode<Button>("Home/Opzioni").Pressed += () => ShowPanel(_options);
         GetNode<Button>("Home/Esci").Pressed += () => GetTree().Quit();
 
@@ -38,6 +41,13 @@ public partial class MainMenu : Control
 
         SetupOptions();
         GetNode<Button>("Options/Indietro").Pressed += () =>
+        {
+            Settings.Save();
+            ShowPanel(_home);
+        };
+
+        SetupSkins();
+        GetNode<Button>("Skins/Indietro").Pressed += () =>
         {
             Settings.Save();
             ShowPanel(_home);
@@ -66,6 +76,26 @@ public partial class MainMenu : Control
         _home.Visible = panel == _home;
         _online.Visible = panel == _online;
         _options.Visible = panel == _options;
+        _skins.Visible = panel == _skins;
+    }
+
+    private void SetupSkins()
+    {
+        var p1 = GetNode<OptionButton>("Skins/P1Row/P1Skin");
+        var p2 = GetNode<OptionButton>("Skins/P2Row/P2Skin");
+        foreach (string name in Player.PlayerSkin.Names)
+        {
+            p1.AddItem(name);
+            p2.AddItem(name);
+        }
+        p1.Selected = Mathf.Clamp(Settings.SkinP1, 0, Player.PlayerSkin.Count - 1);
+        p2.Selected = Mathf.Clamp(Settings.SkinP2, 0, Player.PlayerSkin.Count - 1);
+        p1.ItemSelected += index => Settings.SkinP1 = (int)index;
+        p2.ItemSelected += index => Settings.SkinP2 = (int)index;
+
+        var swap = GetNode<CheckBox>("Skins/SwapRoles");
+        swap.ButtonPressed = Settings.SwapRoles;
+        swap.Toggled += pressed => Settings.SwapRoles = pressed;
     }
 
     private void SetupOptions()
