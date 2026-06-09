@@ -23,7 +23,7 @@ godot-mono --path .
 ## Stato
 
 - [x] M0 — Setup progetto
-- [ ] M1 — Player controller base
+- [x] M1 — Player controller base
 - [ ] M2 — Split-screen 2 player locali
 - [ ] M3 — Sistema fasi (blu/rosso)
 - [ ] M4 — Vista asimmetrica
@@ -37,4 +37,7 @@ godot-mono --path .
 
 ## Controlli
 
-_(in arrivo con M1/M2)_
+| Azione | Player 1 | Player 2 |
+| --- | --- | --- |
+| Movimento | WASD | Stick sinistro gamepad / Frecce |
+| Salto | Spazio | Tasto A gamepad / Invio |

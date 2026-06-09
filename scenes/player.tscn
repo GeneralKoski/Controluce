@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://cl0playerscn1"]
+
+[ext_resource type="Script" path="res://src/Player/PlayerController.cs" id="1_ctrl"]
+[ext_resource type="Script" path="res://src/Player/PlayerInput.cs" id="2_input"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_ctrl")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_body")
+
+[node name="PlayerInput" type="Node" parent="."]
+script = ExtResource("2_input")
+Prefix = "p1"
