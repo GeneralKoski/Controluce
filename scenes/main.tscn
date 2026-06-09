@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cl0mainscene1"]
+[gd_scene load_steps=13 format=3 uid="uid://cl0mainscene1"]
 
 [ext_resource type="Script" path="res://src/Core/GameManager.cs" id="1_gm"]
 [ext_resource type="PackedScene" uid="uid://cl0playerscn1" path="res://scenes/player.tscn" id="2_player"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://src/Core/RopeConstraint.cs" id="5_rope"]
 [ext_resource type="Script" path="res://src/Core/RopeVisual.cs" id="6_ropevisual"]
 [ext_resource type="PackedScene" uid="uid://cl0room010001" path="res://scenes/rooms/room_01.tscn" id="7_room"]
+[ext_resource type="Script" path="res://src/Core/TensionIndicator.cs" id="8_tension"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p1"]
 albedo_color = Color(0.3, 0.55, 1, 1)
@@ -119,3 +120,18 @@ offset_bottom = 100
 grow_horizontal = 2
 theme_override_font_sizes/font_size = 40
 horizontal_alignment = 1
+
+[node name="TensionBar" type="ProgressBar" parent="UI" node_paths=PackedStringArray("Constraint")]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -120
+offset_right = 120
+offset_top = -40
+offset_bottom = -24
+grow_horizontal = 2
+grow_vertical = 0
+show_percentage = false
+script = ExtResource("8_tension")
+Constraint = NodePath("../../World/Rope")

@@ -21,6 +21,7 @@ public partial class ScreenshotTest : Node
         {
             Save("Main/Split/ViewP1/ViewportP1", "/tmp/controluce_p1.png");
             Save("Main/Split/ViewP2/ViewportP2", "/tmp/controluce_p2.png");
+            GetViewport().GetTexture().GetImage().SavePng("/tmp/controluce_full.png");
 
             // Vista dall'alto dell'intera stanza per il check della geometria.
             var rig = GetNode<Node3D>("Main/Split/ViewP1/ViewportP1/CameraRig");

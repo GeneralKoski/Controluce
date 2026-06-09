@@ -12,4 +12,6 @@ public partial class PlayerInput : Node
     public bool IsJumpJustPressed() => Input.IsActionJustPressed($"{Prefix}_jump");
 
     public bool IsJumpHeld() => Input.IsActionPressed($"{Prefix}_jump");
+
+    public bool IsPingJustPressed() => Input.IsActionJustPressed($"{Prefix}_ping");
 }

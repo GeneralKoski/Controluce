@@ -11,8 +11,14 @@ public partial class RopeVisual : MultiMeshInstance3D
     [Export] public float Damping { get; set; } = 0.92f;
     [Export] public float SagSlack { get; set; } = 0.4f;
 
+    private static readonly Color SlackColor = new(0.45f, 0.33f, 0.2f);
+    private static readonly Color TautColor = new(1f, 0.25f, 0.15f);
+
     private Vector3[] _points = [];
     private Vector3[] _previous = [];
+    private StandardMaterial3D _material = null!;
+    private AudioStreamPlayer3D _creakAudio = null!;
+    private float _creakCooldown;
 
     public override void _Ready()
     {
@@ -20,14 +26,22 @@ public partial class RopeVisual : MultiMeshInstance3D
         _points = new Vector3[count];
         _previous = new Vector3[count];
 
+        _material = new StandardMaterial3D { AlbedoColor = SlackColor };
         var mesh = new CylinderMesh
         {
             TopRadius = 0.04f,
             BottomRadius = 0.04f,
             Height = 1f,
             RadialSegments = 6,
-            Material = new StandardMaterial3D { AlbedoColor = new Color(0.45f, 0.33f, 0.2f) },
+            Material = _material,
         };
+
+        _creakAudio = new AudioStreamPlayer3D
+        {
+            Stream = AudioSynth.Creak(),
+            VolumeDb = -6f,
+        };
+        AddChild(_creakAudio);
 
         Multimesh = new MultiMesh
         {
@@ -94,6 +108,23 @@ public partial class RopeVisual : MultiMeshInstance3D
         }
 
         UpdateInstances();
+        UpdateTensionFeedback(dt, anchorA, anchorB);
+    }
+
+    private void UpdateTensionFeedback(float dt, Vector3 anchorA, Vector3 anchorB)
+    {
+        float tension = Constraint!.Tension;
+        float emphasis = Mathf.Clamp((tension - 0.7f) / 0.3f, 0f, 1f);
+        _material.AlbedoColor = SlackColor.Lerp(TautColor, emphasis);
+
+        _creakCooldown -= dt;
+        if (tension > 0.92f && _creakCooldown <= 0f)
+        {
+            _creakCooldown = 0.9f;
+            _creakAudio.GlobalPosition = (anchorA + anchorB) * 0.5f;
+            _creakAudio.PitchScale = 0.85f + GD.Randf() * 0.3f;
+            _creakAudio.Play();
+        }
     }
 
     public void Snap()

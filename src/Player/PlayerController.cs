@@ -12,12 +12,21 @@ public partial class PlayerController : CharacterBody3D
     [Export] public float Gravity { get; set; } = 24.0f;
 
     private PlayerInput _input = null!;
+    private AudioStreamPlayer3D _stepAudio = null!;
+    private float _stepTimer;
 
     public override void _Ready()
     {
         _input = GetNode<PlayerInput>("PlayerInput");
         CollisionLayer = PhaseLayers.Player;
         CollisionMask = PhaseLayers.PlayerCollisionMaskFor(PlayerPhase);
+
+        _stepAudio = new AudioStreamPlayer3D
+        {
+            Stream = AudioSynth.NoiseBurst(0.09f),
+            VolumeDb = -10f,
+        };
+        AddChild(_stepAudio);
     }
 
     public override void _PhysicsProcess(double delta)
@@ -38,5 +47,38 @@ public partial class PlayerController : CharacterBody3D
 
         Velocity = velocity;
         MoveAndSlide();
+
+        UpdateFootsteps(dt);
+
+        if (_input.IsPingJustPressed())
+            SpawnPing();
+    }
+
+    private void UpdateFootsteps(float dt)
+    {
+        Vector3 horizontal = Velocity with { Y = 0 };
+        if (!IsOnFloor() || horizontal.Length() < 1f)
+        {
+            _stepTimer = 0f;
+            return;
+        }
+
+        _stepTimer -= dt;
+        if (_stepTimer > 0f)
+            return;
+
+        _stepTimer = 2.2f / horizontal.Length();
+        _stepAudio.PitchScale = 0.9f + GD.Randf() * 0.2f;
+        _stepAudio.Play();
+    }
+
+    private void SpawnPing()
+    {
+        var marker = new PingMarker
+        {
+            Color = PlayerPhase == Phase.Blue ? new Color(0.4f, 0.65f, 1f) : new Color(1f, 0.45f, 0.4f),
+        };
+        GetParent().AddChild(marker);
+        marker.GlobalPosition = GlobalPosition + Vector3.Up * 2.5f;
     }
 }

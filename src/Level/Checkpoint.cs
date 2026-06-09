@@ -12,6 +12,7 @@ public partial class Checkpoint : Area3D
 
     private MeshInstance3D? _pillar;
     private StandardMaterial3D? _material;
+    private AudioStreamPlayer3D? _chime;
 
     public Vector3 SpawnPositionA => GetNode<Node3D>("SpawnA").GlobalPosition;
     public Vector3 SpawnPositionB => GetNode<Node3D>("SpawnB").GlobalPosition;
@@ -31,6 +32,13 @@ public partial class Checkpoint : Area3D
             Position = Vector3.Up,
         };
         AddChild(_pillar);
+
+        _chime = new AudioStreamPlayer3D
+        {
+            Stream = AudioSynth.Chime(),
+            VolumeDb = -6f,
+        };
+        AddChild(_chime);
     }
 
     public void SetActive(bool active)
@@ -41,6 +49,9 @@ public partial class Checkpoint : Area3D
         _material.EmissionEnabled = active;
         _material.Emission = new Color(0.2f, 1f, 0.4f);
         _material.AlbedoColor = active ? new Color(0.3f, 1f, 0.5f) : new Color(0.7f, 0.7f, 0.7f);
+
+        if (active)
+            _chime?.Play();
     }
 
     private void OnBodyEntered(Node3D body)
