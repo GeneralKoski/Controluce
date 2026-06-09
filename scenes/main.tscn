@@ -1,9 +1,11 @@
-[gd_scene load_steps=13 format=3 uid="uid://cl0mainscene1"]
+[gd_scene load_steps=15 format=3 uid="uid://cl0mainscene1"]
 
 [ext_resource type="Script" path="res://src/Core/GameManager.cs" id="1_gm"]
 [ext_resource type="PackedScene" uid="uid://cl0playerscn1" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://src/Player/CameraRig.cs" id="3_camrig"]
 [ext_resource type="Script" path="res://src/Level/PhaseBlock.cs" id="4_phaseblock"]
+[ext_resource type="Script" path="res://src/Core/RopeConstraint.cs" id="5_rope"]
+[ext_resource type="Script" path="res://src/Core/RopeVisual.cs" id="6_ropevisual"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(24, 1, 24)
@@ -86,6 +88,15 @@ script = ExtResource("4_phaseblock")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.5, -8)
 script = ExtResource("4_phaseblock")
 BlockPhase = 1
+
+[node name="Rope" type="Node3D" parent="World" node_paths=PackedStringArray("PlayerA", "PlayerB")]
+script = ExtResource("5_rope")
+PlayerA = NodePath("../Player1")
+PlayerB = NodePath("../Player2")
+
+[node name="RopeVisual" type="MultiMeshInstance3D" parent="World" node_paths=PackedStringArray("Constraint")]
+script = ExtResource("6_ropevisual")
+Constraint = NodePath("../Rope")
 
 [node name="Split" type="HBoxContainer" parent="."]
 anchors_preset = 15

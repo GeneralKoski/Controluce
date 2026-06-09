@@ -16,7 +16,7 @@ public partial class ScreenshotTest : Node
     public override void _Process(double delta)
     {
         _frames++;
-        if (_frames < 30)
+        if (_frames < 150)
             return;
 
         Save("Main/Split/ViewP1/ViewportP1", "/tmp/controluce_p1.png");
