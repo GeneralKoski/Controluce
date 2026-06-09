@@ -48,8 +48,23 @@ public partial class PhaseBlock : StaticBody3D
         var solid = new MeshInstance3D
         {
             Mesh = mesh,
+            Layers = PhaseLayers.SolidRenderLayerFor(_phase),
             MaterialOverride = new StandardMaterial3D { AlbedoColor = color },
         };
         AddChild(solid);
+
+        var ghost = new MeshInstance3D
+        {
+            Mesh = mesh,
+            Layers = PhaseLayers.GhostRenderLayerFor(_phase),
+            CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+            MaterialOverride = new StandardMaterial3D
+            {
+                AlbedoColor = new Color(color.R, color.G, color.B, 0.15f),
+                Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+                ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+            },
+        };
+        AddChild(ghost);
     }
 }
