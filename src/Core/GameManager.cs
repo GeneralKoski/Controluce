@@ -40,6 +40,7 @@ public partial class GameManager : Node
 
         Settings.Load();
         RespawnBothPlayers = Settings.RespawnBoth;
+        ApplyAppearance(Settings.SkinP1, Settings.SkinP2, Settings.SwapRoles);
 
         var music = new AudioStreamPlayer
         {
@@ -114,6 +115,30 @@ public partial class GameManager : Node
     }
 
     public void RestartRoom() => LoadRoom(_roomIndex);
+
+    // Skin e ruoli (chi è blu e chi è rosso): applicati all'avvio dalle
+    // impostazioni locali e riapplicabili dal layer di rete quando arriva
+    // la scelta del peer. Lo scambio ruoli inverte fase, colori e camera;
+    // gli spawn restano per lato (A=sinistra, B=destra): scambiarli creerebbe
+    // un teletrasporto incrociato nello stesso frame e contatti fantasma.
+    public void ApplyAppearance(int skinP1, int skinP2, bool swapRoles)
+    {
+        Phase phase1 = swapRoles ? Phase.Red : Phase.Blue;
+        Phase phase2 = PhaseLayers.Opposite(phase1);
+
+        Player1?.SetPhase(phase1);
+        Player2?.SetPhase(phase2);
+        if (Player1?.GetNodeOrNull<MeshInstance3D>("MeshInstance3D") is { } visual1)
+            PlayerSkin.Apply(visual1, phase1, skinP1);
+        if (Player2?.GetNodeOrNull<MeshInstance3D>("MeshInstance3D") is { } visual2)
+            PlayerSkin.Apply(visual2, phase2, skinP2);
+
+        foreach (Node node in GetTree().GetNodesInGroup("camera_rig"))
+        {
+            if (node is CameraRig rig && rig.Target is PlayerController target)
+                rig.SetViewPhase(target.PlayerPhase);
+        }
+    }
 
     private static void Respawn(PlayerController player, Vector3 position)
     {

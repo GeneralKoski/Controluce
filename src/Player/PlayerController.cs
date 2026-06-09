@@ -42,10 +42,18 @@ public partial class PlayerController : CharacterBody3D
         _ropeDir = ropeDir;
     }
 
+    // Cambia la fase (e quindi le collisioni) a runtime: usato dallo
+    // scambio ruoli, che inverte chi è blu e chi è rosso.
+    public void SetPhase(Phase phase)
+    {
+        PlayerPhase = phase;
+        CollisionMask = PhaseLayers.PlayerCollisionMaskFor(phase);
+    }
+
     public override void _Ready()
     {
         CollisionLayer = PhaseLayers.Player;
-        CollisionMask = PhaseLayers.PlayerCollisionMaskFor(PlayerPhase);
+        SetPhase(PlayerPhase);
 
         _stepAudio = new AudioStreamPlayer3D
         {

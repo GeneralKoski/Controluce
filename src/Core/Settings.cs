@@ -12,6 +12,9 @@ public static class Settings
     public static float MouseSensitivity { get; set; } = 0.003f;
     public static float StickSpeed { get; set; } = 2.5f;
     public static bool RespawnBoth { get; set; } = true;
+    public static int SkinP1 { get; set; }
+    public static int SkinP2 { get; set; }
+    public static bool SwapRoles { get; set; }
 
     public static void Load()
     {
@@ -26,6 +29,9 @@ public static class Settings
             MouseSensitivity = (float)file.GetValue("input", "mouse_sensitivity", 0.003f);
             StickSpeed = (float)file.GetValue("input", "stick_speed", 2.5f);
             RespawnBoth = (bool)file.GetValue("game", "respawn_both", true);
+            SkinP1 = (int)file.GetValue("skins", "p1", 0);
+            SkinP2 = (int)file.GetValue("skins", "p2", 0);
+            SwapRoles = (bool)file.GetValue("game", "swap_roles", false);
         }
         ApplyVolume();
     }
@@ -37,6 +43,9 @@ public static class Settings
         file.SetValue("input", "mouse_sensitivity", MouseSensitivity);
         file.SetValue("input", "stick_speed", StickSpeed);
         file.SetValue("game", "respawn_both", RespawnBoth);
+        file.SetValue("skins", "p1", SkinP1);
+        file.SetValue("skins", "p2", SkinP2);
+        file.SetValue("game", "swap_roles", SwapRoles);
         file.Save(FilePath);
     }
 

@@ -10,6 +10,18 @@ public partial class ScreenshotTest : Node
 
     public override void _Ready()
     {
+        // CONTROLUCE_SHOT_SKINS="n,m" e CONTROLUCE_SHOT_SWAP=1 per fotografare
+        // skin e scambio ruoli senza toccare user://settings.cfg.
+        Core.Settings.Load();
+        string[] skins = OS.GetEnvironment("CONTROLUCE_SHOT_SKINS").Split(',');
+        if (skins.Length == 2 && int.TryParse(skins[0], out int s1) && int.TryParse(skins[1], out int s2))
+        {
+            Core.Settings.SkinP1 = s1;
+            Core.Settings.SkinP2 = s2;
+        }
+        if (OS.GetEnvironment("CONTROLUCE_SHOT_SWAP") == "1")
+            Core.Settings.SwapRoles = true;
+
         AddChild(GD.Load<PackedScene>("res://scenes/main.tscn").Instantiate());
     }
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cl0mainscene1"]
+[gd_scene load_steps=13 format=3 uid="uid://cl0mainscene1"]
 
 [ext_resource type="Script" path="res://src/Core/GameManager.cs" id="1_gm"]
 [ext_resource type="PackedScene" uid="uid://cl0playerscn1" path="res://scenes/player.tscn" id="2_player"]
@@ -11,24 +11,6 @@
 
 [sub_resource type="Theme" id="Theme_ui"]
 default_font_size = 28
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p1"]
-albedo_color = Color(0.3, 0.55, 1, 1)
-roughness = 0.45
-emission_enabled = true
-emission = Color(0.075, 0.14, 0.25, 1)
-rim_enabled = true
-rim = 0.6
-rim_tint = 0.15
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p2"]
-albedo_color = Color(1, 0.35, 0.3, 1)
-roughness = 0.45
-emission_enabled = true
-emission = Color(0.25, 0.09, 0.075, 1)
-rim_enabled = true
-rim = 0.6
-rim_tint = 0.15
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.055, 0.075, 0.16, 1)
@@ -111,18 +93,12 @@ sky_mode = 1
 [node name="Player1" parent="World" instance=ExtResource("2_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 2, -2)
 
-[node name="MeshInstance3D" parent="World/Player1"]
-surface_material_override/0 = SubResource("StandardMaterial3D_p1")
-
 [node name="PlayerInput" parent="World/Player1" node_paths=PackedStringArray("Camera")]
 Camera = NodePath("../../../Split/ViewP1/ViewportP1/CameraRig")
 
 [node name="Player2" parent="World" instance=ExtResource("2_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2, -2)
 PlayerPhase = 1
-
-[node name="MeshInstance3D" parent="World/Player2"]
-surface_material_override/0 = SubResource("StandardMaterial3D_p2")
 
 [node name="PlayerInput" parent="World/Player2" node_paths=PackedStringArray("Camera")]
 Prefix = "p2"

@@ -24,8 +24,17 @@ public partial class CameraRig : Node3D
 
     public float Yaw => _yaw;
 
+    // Cambia la fase vista dalla camera a runtime (scambio ruoli).
+    public void SetViewPhase(Phase phase)
+    {
+        ViewPhase = phase;
+        if (_camera != null)
+            _camera.CullMask = PhaseLayers.CameraCullMaskFor(phase);
+    }
+
     public override void _Ready()
     {
+        AddToGroup("camera_rig");
         _camera = GetNode<Camera3D>("Camera3D");
         _camera.CullMask = PhaseLayers.CameraCullMaskFor(ViewPhase);
         _cameraHome = _camera.Position;
