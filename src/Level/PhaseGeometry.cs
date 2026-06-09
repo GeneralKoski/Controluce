@@ -18,6 +18,28 @@ public static class PhaseGeometry
         _ => NeutralColor,
     };
 
+    private static ImageTexture? _gridTexture;
+
+    // Griglia tenue generata in codice: aiuta a leggere distanze e velocità.
+    private static ImageTexture GridTexture()
+    {
+        if (_gridTexture != null)
+            return _gridTexture;
+
+        const int size = 64;
+        var image = Image.CreateEmpty(size, size, false, Image.Format.Rgba8);
+        image.Fill(Colors.White);
+        var line = new Color(0.78f, 0.78f, 0.82f);
+        for (int i = 0; i < size; i++)
+        {
+            image.SetPixel(i, 0, line);
+            image.SetPixel(0, i, line);
+        }
+
+        _gridTexture = ImageTexture.CreateFromImage(image);
+        return _gridTexture;
+    }
+
     // Ritorna la mesh solida (per eventuali effetti, es. blink dei blocchi a tempo).
     public static MeshInstance3D Build(PhysicsBody3D body, Phase phase, Vector3 size)
     {
@@ -43,7 +65,13 @@ public static class PhaseGeometry
         {
             Mesh = mesh,
             Layers = PhaseLayers.SolidRenderLayerFor(phase),
-            MaterialOverride = new StandardMaterial3D { AlbedoColor = color },
+            MaterialOverride = new StandardMaterial3D
+            {
+                AlbedoColor = color,
+                AlbedoTexture = GridTexture(),
+                Uv1Triplanar = true,
+                Uv1Scale = new Vector3(0.5f, 0.5f, 0.5f),
+            },
         };
         body.AddChild(solid);
 
