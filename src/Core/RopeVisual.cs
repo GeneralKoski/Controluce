@@ -13,12 +13,16 @@ public partial class RopeVisual : MultiMeshInstance3D
 
     private static readonly Color SlackColor = new(0.45f, 0.33f, 0.2f);
     private static readonly Color TautColor = new(1f, 0.25f, 0.15f);
+    private static readonly Color ReelColor = new(1f, 0.85f, 0.3f);
 
     private Vector3[] _points = [];
     private Vector3[] _previous = [];
     private StandardMaterial3D _material = null!;
     private AudioStreamPlayer3D _creakAudio = null!;
+    private AudioStreamPlayer3D _ratchetAudio = null!;
     private float _creakCooldown;
+    private float _ratchetCooldown;
+    private float _reelPulse;
 
     public override void _Ready()
     {
@@ -42,6 +46,13 @@ public partial class RopeVisual : MultiMeshInstance3D
             VolumeDb = -6f,
         };
         AddChild(_creakAudio);
+
+        _ratchetAudio = new AudioStreamPlayer3D
+        {
+            Stream = AudioSynth.Tone(240f, 0.05f, 0.3f),
+            VolumeDb = -8f,
+        };
+        AddChild(_ratchetAudio);
 
         Multimesh = new MultiMesh
         {
@@ -115,7 +126,27 @@ public partial class RopeVisual : MultiMeshInstance3D
     {
         float tension = Constraint!.Tension;
         float emphasis = Mathf.Clamp((tension - 0.7f) / 0.3f, 0f, 1f);
-        _material.AlbedoColor = SlackColor.Lerp(TautColor, emphasis);
+        Color color = SlackColor.Lerp(TautColor, emphasis);
+
+        // Riavvolgimento: la corda pulsa giallo e "clicca" come un argano,
+        // così chi viene tirato lo capisce subito.
+        if (Constraint.IsReeling)
+        {
+            _reelPulse += dt * 10f;
+            color = color.Lerp(ReelColor, 0.5f + 0.4f * Mathf.Sin(_reelPulse));
+
+            _ratchetCooldown -= dt;
+            if (_ratchetCooldown <= 0f)
+            {
+                _ratchetCooldown = 0.14f;
+                _ratchetAudio.GlobalPosition = (anchorA + anchorB) * 0.5f;
+                _ratchetAudio.PitchScale =
+                    1f + 0.6f * (1f - Constraint.CurrentLength / Mathf.Max(Constraint.MaxLength, 0.01f));
+                _ratchetAudio.Play();
+            }
+        }
+
+        _material.AlbedoColor = color;
 
         _creakCooldown -= dt;
         if (tension > 0.92f && _creakCooldown <= 0f)

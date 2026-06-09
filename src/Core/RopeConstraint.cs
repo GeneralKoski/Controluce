@@ -36,6 +36,9 @@ public partial class RopeConstraint : Node3D
     // Lunghezza effettiva corrente (MaxLength quando nessuno tira).
     public float CurrentLength { get; private set; }
 
+    // True mentre qualcuno sta riavvolgendo la corda.
+    public bool IsReeling { get; private set; }
+
     public Vector3 AnchorA => PlayerA?.GlobalPosition + Vector3.Up ?? Vector3.Zero;
     public Vector3 AnchorB => PlayerB?.GlobalPosition + Vector3.Up ?? Vector3.Zero;
 
@@ -54,6 +57,7 @@ public partial class RopeConstraint : Node3D
         float dt = (float)delta;
 
         bool pulling = PlayerA.IsPullingRope || PlayerB.IsPullingRope;
+        IsReeling = pulling;
         CurrentLength = Mathf.MoveToward(
             CurrentLength,
             pulling ? Mathf.Min(MinLength, MaxLength) : MaxLength,
