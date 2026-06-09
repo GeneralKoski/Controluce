@@ -12,15 +12,26 @@ public partial class PlayerController : CharacterBody3D
     [Export] public float Acceleration { get; set; } = 40.0f;
     [Export] public float JumpVelocity { get; set; } = 9.0f;
     [Export] public float Gravity { get; set; } = 24.0f;
+    // Accelerazione di "pompata" del dondolio da appesi (m/s^2).
+    [Export] public float SwingPump { get; set; } = 10.0f;
 
     private PlayerCommand _command;
     private AudioStreamPlayer3D _stepAudio = null!;
     private float _stepTimer;
+    private bool _hanging;
+    private Vector3 _ropeDir;
 
     // Letto da RopeConstraint (che fa lo step dopo i player).
     public bool IsPullingRope { get; private set; }
 
     public void SetCommand(PlayerCommand command) => _command = command;
+
+    // Impostato da RopeConstraint quando il player penzola dalla corda.
+    public void SetRopeHang(bool hanging, Vector3 ropeDir)
+    {
+        _hanging = hanging;
+        _ropeDir = ropeDir;
+    }
 
     public override void _Ready()
     {
@@ -46,9 +57,24 @@ public partial class PlayerController : CharacterBody3D
         if (_command.JumpPressed && IsOnFloor())
             velocity.Y = JumpVelocity;
 
-        Vector3 target = new Vector3(_command.MoveAxis.X, 0, _command.MoveAxis.Y) * Speed;
-        velocity.X = Mathf.MoveToward(velocity.X, target.X, Acceleration * dt);
-        velocity.Z = Mathf.MoveToward(velocity.Z, target.Z, Acceleration * dt);
+        if (_hanging && !IsOnFloor())
+        {
+            // Da appesi niente freno aereo: l'input pompa il dondolio
+            // sul piano tangente alla corda, il pendolo fa il resto.
+            Vector3 horizontalSpeed = velocity with { Y = 0 };
+            if (horizontalSpeed.Length() < Speed * 1.6f)
+            {
+                Vector3 pump = new Vector3(_command.MoveAxis.X, 0, _command.MoveAxis.Y) * SwingPump;
+                pump -= _ropeDir * pump.Dot(_ropeDir);
+                velocity += pump * dt;
+            }
+        }
+        else
+        {
+            Vector3 target = new Vector3(_command.MoveAxis.X, 0, _command.MoveAxis.Y) * Speed;
+            velocity.X = Mathf.MoveToward(velocity.X, target.X, Acceleration * dt);
+            velocity.Z = Mathf.MoveToward(velocity.Z, target.Z, Acceleration * dt);
+        }
 
         Velocity = velocity;
         MoveAndSlide();

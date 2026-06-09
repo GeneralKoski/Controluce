@@ -27,7 +27,8 @@ public partial class RopeConstraint : Node3D
     // Accelerazione massima del richiamo elastico (m/s^2) a corda completamente tesa.
     [Export] public float Elasticity { get; set; } = 14.0f;
     // Smorzamento dell'oscillazione del player appeso (1/s).
-    [Export] public float SwingDamping { get; set; } = 0.6f;
+    // Basso: il dondolio deve restare vivo e controllabile.
+    [Export] public float SwingDamping { get; set; } = 0.15f;
 
     // 0 = corda lasca, 1 = al limite.
     public float Tension { get; private set; }
@@ -67,6 +68,11 @@ public partial class RopeConstraint : Node3D
 
         Vector3 dir = ab / distance;
         (float weightA, float weightB) = Weights();
+
+        // Stato "appeso": in aria, corda quasi tesa, ancorato sopra di sé.
+        bool taut = distance > 0.9f * CurrentLength;
+        PlayerA.SetRopeHang(taut && !PlayerA.IsOnFloor() && dir.Y > 0.3f, dir);
+        PlayerB.SetRopeHang(taut && !PlayerB.IsOnFloor() && -dir.Y > 0.3f, -dir);
 
         // Richiamo elastico progressivo: si sente prima del limite, leggibile.
         float softStart = SoftZoneStart * CurrentLength;

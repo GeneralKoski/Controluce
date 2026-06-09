@@ -58,6 +58,7 @@ Per prototipare una stanza nuova in pochi minuti:
 | Salto | Spazio | Tasto A gamepad / Invio |
 | Ping "guarda qui" | E | Tasto B gamepad / Shift |
 | Tira la corda (tieni premuto) | Q | Tasto X gamepad / Ctrl |
+| Dondola (da appeso) | A/D nel verso del moto | Stick nel verso del moto |
 
 ## Test
 
@@ -70,4 +71,5 @@ godot-mono --headless --path . scenes/tests/test_counterweight.tscn
 godot-mono --headless --path . scenes/tests/test_exitzone.tscn
 godot-mono --headless --path . scenes/tests/test_checkpoint.tscn
 godot-mono --headless --path . scenes/tests/test_pull.tscn
+godot-mono --headless --path . scenes/tests/test_swing.tscn
 ```
