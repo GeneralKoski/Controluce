@@ -62,7 +62,8 @@ In alternativa: variabili d'ambiente `CONTROLUCE_MODE` (server/client),
 - [x] M11 — Refactor authoritative
 - [x] M12 — Online co-op (server authoritative)
 
-Extra oltre le milestone: progressione su 3 stanze con transizioni, pedane a
+Extra oltre le milestone: progressione su 4 stanze con transizioni (la
+quarta, "Il pendolo", è costruita su dondolio e salto da appeso), pedane a
 peso, piattaforme mobili/porte/ascensori, blocchi a fase alternante, tira-corda
 con feedback, dondolio controllabile e salto da appeso, coyote time + jump
 buffer, camera orbitale con occlusione, menu principale con lobby online,
