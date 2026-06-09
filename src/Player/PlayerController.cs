@@ -3,6 +3,8 @@ using Godot;
 
 namespace Controluce.Player;
 
+// Simulazione del player: consuma solo PlayerCommand, non legge mai
+// i dispositivi di input direttamente.
 public partial class PlayerController : CharacterBody3D
 {
     [Export] public Phase PlayerPhase { get; set; } = Phase.Blue;
@@ -11,13 +13,14 @@ public partial class PlayerController : CharacterBody3D
     [Export] public float JumpVelocity { get; set; } = 9.0f;
     [Export] public float Gravity { get; set; } = 24.0f;
 
-    private PlayerInput _input = null!;
+    private PlayerCommand _command;
     private AudioStreamPlayer3D _stepAudio = null!;
     private float _stepTimer;
 
+    public void SetCommand(PlayerCommand command) => _command = command;
+
     public override void _Ready()
     {
-        _input = GetNode<PlayerInput>("PlayerInput");
         CollisionLayer = PhaseLayers.Player;
         CollisionMask = PhaseLayers.PlayerCollisionMaskFor(PlayerPhase);
 
@@ -37,11 +40,10 @@ public partial class PlayerController : CharacterBody3D
         if (!IsOnFloor())
             velocity.Y -= Gravity * dt;
 
-        if (_input.IsJumpJustPressed() && IsOnFloor())
+        if (_command.JumpPressed && IsOnFloor())
             velocity.Y = JumpVelocity;
 
-        Vector2 axis = _input.GetMoveAxis();
-        Vector3 target = new Vector3(axis.X, 0, axis.Y) * Speed;
+        Vector3 target = new Vector3(_command.MoveAxis.X, 0, _command.MoveAxis.Y) * Speed;
         velocity.X = Mathf.MoveToward(velocity.X, target.X, Acceleration * dt);
         velocity.Z = Mathf.MoveToward(velocity.Z, target.Z, Acceleration * dt);
 
@@ -50,8 +52,10 @@ public partial class PlayerController : CharacterBody3D
 
         UpdateFootsteps(dt);
 
-        if (_input.IsPingJustPressed())
+        if (_command.PingPressed)
             SpawnPing();
+
+        _command = default;
     }
 
     private void UpdateFootsteps(float dt)

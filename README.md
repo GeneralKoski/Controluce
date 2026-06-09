@@ -30,10 +30,11 @@ godot-mono --path .
 - [x] M5 — La corda
 - [x] M6 — Meccanica contrappeso
 - [x] M7 — Prima stanza puzzle
-- [ ] M8 — Checkpoint & respawn
-- [ ] M9 — Audio & feedback
-- [ ] M10 — Tooling level design
-- [ ] M11 — Refactor authoritative
+- [x] M8 — Checkpoint & respawn
+- [x] M9 — Audio & feedback
+- [x] M10 — Tooling level design
+- [x] M11 — Refactor authoritative
+- [ ] M12 — Online co-op (fase 2)
 
 ## Level design
 
@@ -55,3 +56,16 @@ Per prototipare una stanza nuova in pochi minuti:
 | --- | --- | --- |
 | Movimento | WASD | Stick sinistro gamepad / Frecce |
 | Salto | Spazio | Tasto A gamepad / Invio |
+| Ping "guarda qui" | E | Tasto B gamepad / Shift |
+
+## Test
+
+Test headless (escono con codice 0/1 e stampano PASS/FAIL):
+
+```bash
+godot-mono --headless --path . scenes/tests/test_phases.tscn
+godot-mono --headless --path . scenes/tests/test_rope.tscn
+godot-mono --headless --path . scenes/tests/test_counterweight.tscn
+godot-mono --headless --path . scenes/tests/test_exitzone.tscn
+godot-mono --headless --path . scenes/tests/test_checkpoint.tscn
+```
