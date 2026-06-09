@@ -19,6 +19,66 @@ public static class PhaseGeometry
     };
 
     private static ImageTexture? _gridTexture;
+    private static readonly System.Collections.Generic.Dictionary<Phase, StandardMaterial3D> _solidMaterials = new();
+    private static readonly System.Collections.Generic.Dictionary<Phase, ShaderMaterial> _ghostMaterials = new();
+    private static Shader? _ghostShader;
+
+    // Materiale solido condiviso per fase: i blocchi di fase emettono luce
+    // tenue (leggibilità + glow), il rim li staglia in controluce.
+    private static StandardMaterial3D SolidMaterial(Phase phase)
+    {
+        if (_solidMaterials.TryGetValue(phase, out var cached))
+            return cached;
+
+        Color color = ColorFor(phase);
+        var material = new StandardMaterial3D
+        {
+            AlbedoColor = color,
+            AlbedoTexture = GridTexture(),
+            Uv1Triplanar = true,
+            Uv1Scale = new Vector3(0.5f, 0.5f, 0.5f),
+            Roughness = 0.85f,
+        };
+        if (phase != Phase.Neutral)
+        {
+            material.EmissionEnabled = true;
+            material.Emission = color * 0.35f;
+            material.RimEnabled = true;
+            material.Rim = 0.4f;
+            material.RimTint = 0.3f;
+        }
+        _solidMaterials[phase] = material;
+        return material;
+    }
+
+    // Materiale fantasma condiviso: fresnel additivo che illumina i bordi,
+    // così la geometria dell'altra fase resta leggibile ma non invadente.
+    private static ShaderMaterial GhostMaterial(Phase phase)
+    {
+        if (_ghostMaterials.TryGetValue(phase, out var cached))
+            return cached;
+
+        _ghostShader ??= new Shader
+        {
+            Code = """
+                shader_type spatial;
+                render_mode blend_mix, depth_draw_never, cull_back, unshaded;
+
+                uniform vec4 tint : source_color = vec4(1.0);
+
+                void fragment() {
+                    float fres = pow(1.0 - clamp(dot(normalize(NORMAL), normalize(VIEW)), 0.0, 1.0), 2.5);
+                    ALBEDO = tint.rgb * (0.55 + 0.45 * fres);
+                    ALPHA = clamp(0.16 + 0.5 * fres, 0.0, 1.0);
+                }
+                """,
+        };
+
+        var material = new ShaderMaterial { Shader = _ghostShader };
+        material.SetShaderParameter("tint", ColorFor(phase));
+        _ghostMaterials[phase] = material;
+        return material;
+    }
 
     // Griglia tenue generata in codice: aiuta a leggere distanze e velocità.
     private static ImageTexture GridTexture()
@@ -58,20 +118,13 @@ public static class PhaseGeometry
         var shape = new CollisionShape3D { Shape = new BoxShape3D { Size = size } };
         body.AddChild(shape);
 
-        Color color = ColorFor(phase);
         var mesh = new BoxMesh { Size = size };
 
         var solid = new MeshInstance3D
         {
             Mesh = mesh,
             Layers = PhaseLayers.SolidRenderLayerFor(phase),
-            MaterialOverride = new StandardMaterial3D
-            {
-                AlbedoColor = color,
-                AlbedoTexture = GridTexture(),
-                Uv1Triplanar = true,
-                Uv1Scale = new Vector3(0.5f, 0.5f, 0.5f),
-            },
+            MaterialOverride = SolidMaterial(phase),
         };
         body.AddChild(solid);
 
@@ -83,12 +136,7 @@ public static class PhaseGeometry
             Mesh = mesh,
             Layers = PhaseLayers.GhostRenderLayerFor(phase),
             CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
-            MaterialOverride = new StandardMaterial3D
-            {
-                AlbedoColor = new Color(color.R, color.G, color.B, 0.15f),
-                Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
-                ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
-            },
+            MaterialOverride = GhostMaterial(phase),
         };
         body.AddChild(ghost);
         return solid;
