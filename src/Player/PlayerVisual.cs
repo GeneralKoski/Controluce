@@ -69,13 +69,13 @@ public partial class PlayerVisual : MeshInstance3D
         {
             AddChild(new MeshInstance3D
             {
-                Mesh = new SphereMesh { Radius = 0.09f, Height = 0.18f },
+                Mesh = new SphereMesh { Radius = 0.09f, Height = 0.18f, RadialSegments = 16, Rings = 8 },
                 MaterialOverride = white,
                 Position = new Vector3(side * 0.17f, 0.32f, -0.42f),
             });
             AddChild(new MeshInstance3D
             {
-                Mesh = new SphereMesh { Radius = 0.05f, Height = 0.1f },
+                Mesh = new SphereMesh { Radius = 0.05f, Height = 0.1f, RadialSegments = 16, Rings = 8 },
                 MaterialOverride = black,
                 Position = new Vector3(side * 0.16f, 0.32f, -0.49f),
             });
@@ -90,7 +90,7 @@ public partial class PlayerVisual : MeshInstance3D
             OneShot = true,
             Amount = 14,
             Lifetime = 0.45f,
-            Mesh = new SphereMesh { Radius = 0.05f, Height = 0.1f },
+            Mesh = new SphereMesh { Radius = 0.05f, Height = 0.1f, RadialSegments = 8, Rings = 4 },
             Position = new Vector3(0, 0.15f, 0),
             EmissionShape = CpuParticles3D.EmissionShapeEnum.Sphere,
             EmissionSphereRadius = 0.3f,

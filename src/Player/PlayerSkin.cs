@@ -91,7 +91,7 @@ public static class PlayerSkin
         });
         root.AddChild(new MeshInstance3D
         {
-            Mesh = new SphereMesh { Radius = 0.08f, Height = 0.16f },
+            Mesh = new SphereMesh { Radius = 0.08f, Height = 0.16f, RadialSegments = 16, Rings = 8 },
             MaterialOverride = Gold(),
             Position = new Vector3(0, 1.42f, 0),
         });
@@ -101,13 +101,13 @@ public static class PlayerSkin
     {
         root.AddChild(new MeshInstance3D
         {
-            Mesh = new CylinderMesh { TopRadius = 0.42f, BottomRadius = 0.42f, Height = 0.05f },
+            Mesh = new CylinderMesh { TopRadius = 0.42f, BottomRadius = 0.42f, Height = 0.05f, RadialSegments = 24 },
             MaterialOverride = Dark(),
             Position = new Vector3(0, 0.98f, 0),
         });
         root.AddChild(new MeshInstance3D
         {
-            Mesh = new CylinderMesh { TopRadius = 0.26f, BottomRadius = 0.26f, Height = 0.42f },
+            Mesh = new CylinderMesh { TopRadius = 0.26f, BottomRadius = 0.26f, Height = 0.42f, RadialSegments = 24 },
             MaterialOverride = Dark(),
             Position = new Vector3(0, 1.2f, 0),
         });
@@ -131,7 +131,7 @@ public static class PlayerSkin
     {
         root.AddChild(new MeshInstance3D
         {
-            Mesh = new TorusMesh { InnerRadius = 0.22f, OuterRadius = 0.3f },
+            Mesh = new TorusMesh { InnerRadius = 0.22f, OuterRadius = 0.3f, RingSegments = 24, Rings = 12 },
             MaterialOverride = Gold(),
             Position = new Vector3(0, 1.35f, 0),
         });

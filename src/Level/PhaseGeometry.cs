@@ -7,6 +7,9 @@ namespace Controluce.Level;
 // e mesh "fantasma" per la fase opposta. Usata da PhaseBlock e MovingPlatform.
 public static class PhaseGeometry
 {
+    // Contatore di ricostruzioni, esposto per il profiling (test_perf).
+    public static long BuildCount { get; private set; }
+
     public static readonly Color BlueColor = new(0.25f, 0.5f, 1f);
     public static readonly Color RedColor = new(1f, 0.3f, 0.25f);
     public static readonly Color NeutralColor = new(0.55f, 0.57f, 0.6f);
@@ -100,9 +103,28 @@ public static class PhaseGeometry
         return _gridTexture;
     }
 
+    // Cambio di sola fase (toggle/attivazione): aggiorna layer e materiali
+    // in place, senza ricreare nodi e collision shape. Ritorna false se il
+    // blocco va ricostruito da zero (mai costruito, o era/diventa neutro).
+    public static bool Recolor(PhysicsBody3D body, Phase phase)
+    {
+        if (phase == Phase.Neutral
+            || body.GetNodeOrNull<MeshInstance3D>("Solid") is not { } solid
+            || body.GetNodeOrNull<MeshInstance3D>("Ghost") is not { } ghost)
+            return false;
+
+        body.CollisionLayer = PhaseLayers.GeometryLayerFor(phase);
+        solid.Layers = PhaseLayers.SolidRenderLayerFor(phase);
+        solid.MaterialOverride = SolidMaterial(phase);
+        ghost.Layers = PhaseLayers.GhostRenderLayerFor(phase);
+        ghost.MaterialOverride = GhostMaterial(phase);
+        return true;
+    }
+
     // Ritorna la mesh solida (per eventuali effetti, es. blink dei blocchi a tempo).
     public static MeshInstance3D Build(PhysicsBody3D body, Phase phase, Vector3 size)
     {
+        BuildCount++;
         foreach (Node child in body.GetChildren())
         {
             if (child is CollisionShape3D or MeshInstance3D)
@@ -122,6 +144,7 @@ public static class PhaseGeometry
 
         var solid = new MeshInstance3D
         {
+            Name = "Solid",
             Mesh = mesh,
             Layers = PhaseLayers.SolidRenderLayerFor(phase),
             MaterialOverride = SolidMaterial(phase),
@@ -133,6 +156,7 @@ public static class PhaseGeometry
 
         var ghost = new MeshInstance3D
         {
+            Name = "Ghost",
             Mesh = mesh,
             Layers = PhaseLayers.GhostRenderLayerFor(phase),
             CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,

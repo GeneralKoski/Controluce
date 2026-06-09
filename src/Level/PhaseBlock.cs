@@ -10,6 +10,7 @@ public partial class PhaseBlock : StaticBody3D, IActivatable
     private Vector3 _size = new(2f, 0.5f, 2f);
     private bool _snapping;
     private MeshInstance3D? _solidMesh;
+    private Vector3 _builtSize;
     private Phase _basePhase;
     private bool _baseCaptured;
     private float _toggleTimer;
@@ -61,6 +62,8 @@ public partial class PhaseBlock : StaticBody3D, IActivatable
         {
             _toggleTimer -= TogglePeriod;
             BlockPhase = PhaseLayers.Opposite(_phase);
+            if (_solidMesh != null)
+                _solidMesh.Transparency = 0f;
             return;
         }
 
@@ -89,5 +92,15 @@ public partial class PhaseBlock : StaticBody3D, IActivatable
         _snapping = false;
     }
 
-    private void Rebuild() => _solidMesh = PhaseGeometry.Build(this, _phase, _size);
+    private void Rebuild()
+    {
+        // I toggle di sola fase ritintano in place; la ricostruzione completa
+        // serve solo al primo build o quando cambia la dimensione.
+        if (_solidMesh != null && IsInstanceValid(_solidMesh)
+            && _size == _builtSize && PhaseGeometry.Recolor(this, _phase))
+            return;
+
+        _solidMesh = PhaseGeometry.Build(this, _phase, _size);
+        _builtSize = _size;
+    }
 }

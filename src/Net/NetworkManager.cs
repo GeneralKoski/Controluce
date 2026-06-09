@@ -82,6 +82,7 @@ public partial class NetworkManager : Node
             Player2?.GetNodeOrNull("PlayerInput")?.QueueFree();
             if (ViewP2 != null)
                 ViewP2.Visible = false;
+            DisableViewport(ViewP2, "ViewportP2");
 
             if (Player1 != null)
                 Player1.Pinged += (pos, phase) => Rpc(MethodName.RemotePing, pos, phase);
@@ -121,6 +122,7 @@ public partial class NetworkManager : Node
                 Game.NetworkPassive = true;
             if (ViewP1 != null)
                 ViewP1.Visible = false;
+            DisableViewport(ViewP1, "ViewportP1");
 
             // Il client gioca P2 a schermo pieno con i binding di P1: mouse sulla sua camera.
             _clientCamera = ViewP2?.GetNodeOrNull<CameraRig>("ViewportP2/CameraRig");
@@ -169,6 +171,14 @@ public partial class NetworkManager : Node
         {
             ApplySnapshots();
         }
+    }
+
+    // Un SubViewportContainer nascosto continua a renderizzare il mondo:
+    // online la vista dell'altro player va spenta davvero.
+    private static void DisableViewport(Control? container, string viewportName)
+    {
+        if (container?.GetNodeOrNull<SubViewport>(viewportName) is { } viewport)
+            viewport.RenderTargetUpdateMode = SubViewport.UpdateMode.Disabled;
     }
 
     private bool IsConnected() =>
