@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://cl0playerscn1"]
+[gd_scene load_steps=6 format=3 uid="uid://cl0playerscn1"]
 
 [ext_resource type="Script" path="res://src/Player/PlayerController.cs" id="1_ctrl"]
 [ext_resource type="Script" path="res://src/Player/PlayerInput.cs" id="2_input"]
+[ext_resource type="Script" path="res://src/Player/PlayerVisual.cs" id="3_visual"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 
@@ -17,6 +18,7 @@ shape = SubResource("CapsuleShape3D_body")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("CapsuleMesh_body")
+script = ExtResource("3_visual")
 
 [node name="PlayerInput" type="Node" parent="."]
 script = ExtResource("2_input")

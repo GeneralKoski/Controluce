@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cl0mainscene1"]
+[gd_scene load_steps=13 format=3 uid="uid://cl0mainscene1"]
 
 [ext_resource type="Script" path="res://src/Core/GameManager.cs" id="1_gm"]
 [ext_resource type="PackedScene" uid="uid://cl0playerscn1" path="res://scenes/player.tscn" id="2_player"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://src/Core/RopeConstraint.cs" id="5_rope"]
 [ext_resource type="Script" path="res://src/Core/RopeVisual.cs" id="6_ropevisual"]
 [ext_resource type="Script" path="res://src/Core/TensionIndicator.cs" id="8_tension"]
+[ext_resource type="Script" path="res://src/Core/PauseMenu.cs" id="9_pause"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p1"]
 albedo_color = Color(0.3, 0.55, 1, 1)
@@ -147,3 +148,51 @@ grow_vertical = 0
 show_percentage = false
 script = ExtResource("8_tension")
 Constraint = NodePath("../../World/Rope")
+
+[node name="PauseMenu" type="Control" parent="UI" node_paths=PackedStringArray("Game")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9_pause")
+Game = NodePath("../..")
+
+[node name="Panel" type="ColorRect" parent="UI/PauseMenu"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="VBox" type="VBoxContainer" parent="UI/PauseMenu/Panel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -130
+offset_top = -110
+offset_right = 130
+offset_bottom = 110
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="UI/PauseMenu/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "Pausa"
+horizontal_alignment = 1
+
+[node name="Resume" type="Button" parent="UI/PauseMenu/Panel/VBox"]
+layout_mode = 2
+text = "Riprendi"
+
+[node name="Restart" type="Button" parent="UI/PauseMenu/Panel/VBox"]
+layout_mode = 2
+text = "Ricomincia stanza"
+
+[node name="Quit" type="Button" parent="UI/PauseMenu/Panel/VBox"]
+layout_mode = 2
+text = "Esci"

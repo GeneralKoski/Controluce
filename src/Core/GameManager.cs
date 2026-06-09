@@ -34,6 +34,16 @@ public partial class GameManager : Node
         // Il mondo 3D vive nel viewport root ed è condiviso dai due SubViewport:
         // il root non deve renderizzarlo (lo coprono i due schermi).
         GetViewport().Disable3D = true;
+
+        var music = new AudioStreamPlayer
+        {
+            Stream = AudioSynth.AmbientPad(),
+            VolumeDb = -18f,
+            ProcessMode = ProcessModeEnum.Always,
+        };
+        AddChild(music);
+        music.Play();
+
         LoadRoom(0);
     }
 

@@ -67,6 +67,33 @@ public static class AudioSynth
         return Wrap(data);
     }
 
+    // Pad ambient in loop: tutte le frequenze (voci e LFO) hanno cicli interi
+    // sugli 8 secondi, così il loop è senza cuciture.
+    public static AudioStreamWav AmbientPad(float gain = 0.16f)
+    {
+        const float seconds = 8f;
+        int count = (int)(MixRate * seconds);
+        var data = new byte[count * 2];
+        float[] voices = [110f, 165f, 220f, 247.5f];
+
+        for (int i = 0; i < count; i++)
+        {
+            float t = i / (float)MixRate;
+            float sample = 0f;
+            for (int v = 0; v < voices.Length; v++)
+            {
+                float lfo = 0.5f + 0.5f * Mathf.Sin(Mathf.Tau * (0.125f * (v + 1)) * t + v * 1.7f);
+                sample += Mathf.Sin(Mathf.Tau * voices[v] * t) * lfo;
+            }
+            WriteSample(data, i, sample / voices.Length * gain);
+        }
+
+        var wav = Wrap(data);
+        wav.LoopMode = AudioStreamWav.LoopModeEnum.Forward;
+        wav.LoopEnd = count;
+        return wav;
+    }
+
     private static byte[] ToneSamples(float frequency, float seconds, float gain)
     {
         int count = (int)(MixRate * seconds);
