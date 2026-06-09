@@ -63,7 +63,9 @@ peso, piattaforme mobili/porte/ascensori, blocchi a fase alternante, tira-corda
 con feedback, dondolio controllabile e salto da appeso, coyote time + jump
 buffer, camera orbitale con occlusione, menu principale con lobby online,
 opzioni e salvataggio progressi, menu pausa, musica ambient, occhi/particelle
-sui player e griglia procedurale.
+sui player e griglia procedurale, ambiente "controluce" (sole basso, glow,
+SSAO, nebbia, ombre morbide) con blocchi emissivi e geometria fantasma
+fresnel.
 
 ## Level design
 
