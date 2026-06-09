@@ -1,9 +1,11 @@
+using Controluce.Core;
 using Godot;
 
 namespace Controluce.Player;
 
 public partial class PlayerController : CharacterBody3D
 {
+    [Export] public Phase PlayerPhase { get; set; } = Phase.Blue;
     [Export] public float Speed { get; set; } = 6.0f;
     [Export] public float Acceleration { get; set; } = 40.0f;
     [Export] public float JumpVelocity { get; set; } = 9.0f;
@@ -14,6 +16,8 @@ public partial class PlayerController : CharacterBody3D
     public override void _Ready()
     {
         _input = GetNode<PlayerInput>("PlayerInput");
+        CollisionLayer = PhaseLayers.Player;
+        CollisionMask = PhaseLayers.PlayerCollisionMaskFor(PlayerPhase);
     }
 
     public override void _PhysicsProcess(double delta)

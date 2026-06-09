@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://cl0mainscene1"]
+[gd_scene load_steps=13 format=3 uid="uid://cl0mainscene1"]
 
 [ext_resource type="Script" path="res://src/Core/GameManager.cs" id="1_gm"]
 [ext_resource type="PackedScene" uid="uid://cl0playerscn1" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://src/Player/CameraRig.cs" id="3_camrig"]
+[ext_resource type="Script" path="res://src/Level/PhaseBlock.cs" id="4_phaseblock"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(24, 1, 24)
@@ -58,12 +59,33 @@ surface_material_override/0 = SubResource("StandardMaterial3D_p1")
 
 [node name="Player2" parent="World" instance=ExtResource("2_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0)
+PlayerPhase = 1
 
 [node name="MeshInstance3D" parent="World/Player2"]
 surface_material_override/0 = SubResource("StandardMaterial3D_p2")
 
 [node name="PlayerInput" parent="World/Player2"]
 Prefix = "p2"
+
+[node name="BlueLow" type="StaticBody3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1, -4)
+script = ExtResource("4_phaseblock")
+Size = Vector3(4, 0.5, 4)
+
+[node name="RedLow" type="StaticBody3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1, -4)
+script = ExtResource("4_phaseblock")
+BlockPhase = 1
+Size = Vector3(4, 0.5, 4)
+
+[node name="BlueHigh" type="StaticBody3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2.5, -8)
+script = ExtResource("4_phaseblock")
+
+[node name="RedHigh" type="StaticBody3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.5, -8)
+script = ExtResource("4_phaseblock")
+BlockPhase = 1
 
 [node name="Split" type="HBoxContainer" parent="."]
 anchors_preset = 15

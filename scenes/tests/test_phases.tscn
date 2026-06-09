@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://cl0phasetest1"]
+
+[ext_resource type="Script" path="res://src/Tests/PhaseTest.cs" id="1_test"]
+[ext_resource type="PackedScene" uid="uid://cl0playerscn1" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://src/Level/PhaseBlock.cs" id="3_phaseblock"]
+
+[node name="PhaseTest" type="Node3D"]
+script = ExtResource("1_test")
+
+[node name="BlueBlock" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0)
+script = ExtResource("3_phaseblock")
+Size = Vector3(4, 0.5, 4)
+
+[node name="RedBlock" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+script = ExtResource("3_phaseblock")
+BlockPhase = 1
+Size = Vector3(4, 0.5, 4)
+
+[node name="Player1" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 4, 0)
+
+[node name="Player2" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 4, 0)
+PlayerPhase = 1
+
+[node name="PlayerInput" parent="Player2"]
+Prefix = "p2"
