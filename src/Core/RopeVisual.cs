@@ -30,7 +30,12 @@ public partial class RopeVisual : MultiMeshInstance3D
         _points = new Vector3[count];
         _previous = new Vector3[count];
 
-        _material = new StandardMaterial3D { AlbedoColor = SlackColor };
+        _material = new StandardMaterial3D
+        {
+            AlbedoColor = SlackColor,
+            EmissionEnabled = true,
+            Emission = Colors.Black,
+        };
         var mesh = new CylinderMesh
         {
             TopRadius = 0.04f,
@@ -147,6 +152,9 @@ public partial class RopeVisual : MultiMeshInstance3D
         }
 
         _material.AlbedoColor = color;
+        // La corda si "accende" solo quando lavora: tesa o in riavvolgimento.
+        float glow = Constraint.IsReeling ? 0.8f : emphasis * 0.6f;
+        _material.Emission = color * glow;
 
         _creakCooldown -= dt;
         if (tension > 0.92f && _creakCooldown <= 0f)
