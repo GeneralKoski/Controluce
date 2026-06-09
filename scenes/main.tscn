@@ -22,11 +22,12 @@ sky_material = SubResource("ProceduralSkyMaterial_sky")
 background_mode = 2
 sky = SubResource("Sky_main")
 
-[node name="Main" type="Node" node_paths=PackedStringArray("Player1", "Player2", "Banner")]
+[node name="Main" type="Node" node_paths=PackedStringArray("Player1", "Player2", "Banner", "Rope")]
 script = ExtResource("1_gm")
 Player1 = NodePath("World/Player1")
 Player2 = NodePath("World/Player2")
 Banner = NodePath("UI/Banner")
+Rope = NodePath("World/RopeVisual")
 
 [node name="World" type="Node3D" parent="."]
 

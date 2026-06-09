@@ -96,6 +96,12 @@ public partial class RopeVisual : MultiMeshInstance3D
         UpdateInstances();
     }
 
+    public void Snap()
+    {
+        if (Constraint != null)
+            ResetTo(Constraint.AnchorA, Constraint.AnchorB);
+    }
+
     private void ResetTo(Vector3 a, Vector3 b)
     {
         for (int i = 0; i <= Segments; i++)
