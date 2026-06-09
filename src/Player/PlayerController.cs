@@ -16,11 +16,18 @@ public partial class PlayerController : CharacterBody3D
     [Export] public float Gravity { get; set; } = 24.0f;
     // Accelerazione di "pompata" del dondolio da appesi (m/s^2).
     [Export] public float SwingPump { get; set; } = 10.0f;
+    // Anti-rage: grazia dopo il bordo e input di salto memorizzato.
+    [Export] public float CoyoteTime { get; set; } = 0.1f;
+    [Export] public float JumpBufferTime { get; set; } = 0.12f;
 
     private PlayerCommand _command;
     private AudioStreamPlayer3D _stepAudio = null!;
     private float _stepTimer;
     private bool _hanging;
+    private bool _wasHanging;
+    private bool _hangJumpAvailable;
+    private float _coyoteTimer = 999f;
+    private float _jumpBufferTimer = 999f;
     private Vector3 _ropeDir;
 
     // Letto da RopeConstraint (che fa lo step dopo i player).
@@ -56,8 +63,22 @@ public partial class PlayerController : CharacterBody3D
         if (!IsOnFloor())
             velocity.Y -= Gravity * dt;
 
-        if (_command.JumpPressed && IsOnFloor())
+        _coyoteTimer = IsOnFloor() ? 0f : _coyoteTimer + dt;
+        _jumpBufferTimer = _command.JumpPressed ? 0f : _jumpBufferTimer + dt;
+        if (IsOnFloor() || (_hanging && !_wasHanging))
+            _hangJumpAvailable = true;
+        _wasHanging = _hanging;
+
+        // Salto: a terra (con coyote time e buffer) oppure, una volta per
+        // penzolamento, da appeso — sgancia lo slancio del pendolo verso l'alto.
+        bool canJump = _coyoteTimer <= CoyoteTime || (_hanging && _hangJumpAvailable);
+        if (_jumpBufferTimer <= JumpBufferTime && canJump)
+        {
             velocity.Y = JumpVelocity;
+            _jumpBufferTimer = 999f;
+            _coyoteTimer = 999f;
+            _hangJumpAvailable = false;
+        }
 
         if (_hanging && !IsOnFloor())
         {

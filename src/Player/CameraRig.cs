@@ -19,12 +19,16 @@ public partial class CameraRig : Node3D
 
     private float _yaw;
     private float _pitch;
+    private Camera3D _camera = null!;
+    private Vector3 _cameraHome;
 
     public float Yaw => _yaw;
 
     public override void _Ready()
     {
-        GetNode<Camera3D>("Camera3D").CullMask = PhaseLayers.CameraCullMaskFor(ViewPhase);
+        _camera = GetNode<Camera3D>("Camera3D");
+        _camera.CullMask = PhaseLayers.CameraCullMaskFor(ViewPhase);
+        _cameraHome = _camera.Position;
         _yaw = Rotation.Y;
         _pitch = Rotation.X;
 
@@ -61,6 +65,30 @@ public partial class CameraRig : Node3D
 
         float weight = 1f - Mathf.Exp(-FollowSpeed * dt);
         GlobalPosition = GlobalPosition.Lerp(Target.GlobalPosition, weight);
+
+        AvoidOcclusion();
+    }
+
+    // La camera non entra nella geometria che questo player vede solida:
+    // se il raggio pivot->camera colpisce qualcosa, la avvicina.
+    private void AvoidOcclusion()
+    {
+        Vector3 pivot = GlobalPosition + Vector3.Up * 1.2f;
+        Vector3 desired = GlobalTransform * _cameraHome;
+        uint mask = PhaseLayers.Neutral | PhaseLayers.GeometryLayerFor(ViewPhase);
+
+        var query = PhysicsRayQueryParameters3D.Create(pivot, desired, mask);
+        var hit = GetWorld3D().DirectSpaceState.IntersectRay(query);
+
+        if (hit.Count > 0)
+        {
+            Vector3 direction = (desired - pivot).Normalized();
+            _camera.GlobalPosition = (Vector3)hit["position"] - direction * 0.35f;
+        }
+        else
+        {
+            _camera.Position = _cameraHome;
+        }
     }
 
     private static float ApplyDeadzone(float value) =>

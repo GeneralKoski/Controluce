@@ -58,6 +58,14 @@ public partial class SwingTest : Node3D
             Check(_maxResidualSpeed > 1.5f,
                 $"il dondolio persiste senza input (picco {_maxResidualSpeed:F2} m/s dopo 4s)");
 
+            // Salto da appeso: sgancia lo slancio verso l'alto.
+            _p1.SetCommand(new PlayerCommand(Vector2.Zero, true, false, false));
+        }
+
+        if (_ticks == 905)
+        {
+            Check(_p1.Velocity.Y > 5f, $"salto da appeso eseguito (velY {_p1.Velocity.Y:F2})");
+
             GD.Print(_failed ? "SWING TEST: FAIL" : "SWING TEST: PASS");
             GetTree().Quit(_failed ? 1 : 0);
         }
