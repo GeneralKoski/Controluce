@@ -67,7 +67,7 @@ public partial class RopeVisual : MultiMeshInstance3D
         Vector3 anchorB = Constraint.AnchorB;
         // La corda visiva segue la distanza reale (più un filo di abbondanza),
         // così pende poco quando è lasca e si tende man mano che ci si allontana.
-        float visualLength = Mathf.Min(Constraint.MaxLength, anchorA.DistanceTo(anchorB) + SagSlack);
+        float visualLength = Mathf.Min(Constraint.CurrentLength, anchorA.DistanceTo(anchorB) + SagSlack);
         float restLength = visualLength / Segments;
 
         for (int i = 1; i < Segments; i++)

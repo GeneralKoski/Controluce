@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3 uid="uid://cl0pulltest01"]
+
+[ext_resource type="Script" path="res://src/Tests/PullTest.cs" id="1_test"]
+[ext_resource type="PackedScene" uid="uid://cl0playerscn1" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://src/Core/RopeConstraint.cs" id="3_rope"]
+[ext_resource type="Script" path="res://src/Level/PhaseBlock.cs" id="4_block"]
+
+[node name="PullTest" type="Node3D"]
+script = ExtResource("1_test")
+
+[node name="RedPlatform" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.5, 0)
+script = ExtResource("4_block")
+BlockPhase = 1
+Size = Vector3(8, 1, 8)
+
+[node name="BluePad" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 7.5, 0)
+script = ExtResource("4_block")
+Size = Vector3(2, 1, 2)
+
+[node name="Player1" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 9, 0)
+
+[node name="Player2" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 9, 0)
+PlayerPhase = 1
+
+[node name="PlayerInput" parent="Player2"]
+Prefix = "p2"
+
+[node name="Rope" type="Node3D" parent="." node_paths=PackedStringArray("PlayerA", "PlayerB")]
+script = ExtResource("3_rope")
+PlayerA = NodePath("../Player1")
+PlayerB = NodePath("../Player2")

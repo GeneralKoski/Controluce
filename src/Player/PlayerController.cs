@@ -17,6 +17,9 @@ public partial class PlayerController : CharacterBody3D
     private AudioStreamPlayer3D _stepAudio = null!;
     private float _stepTimer;
 
+    // Letto da RopeConstraint (che fa lo step dopo i player).
+    public bool IsPullingRope { get; private set; }
+
     public void SetCommand(PlayerCommand command) => _command = command;
 
     public override void _Ready()
@@ -55,6 +58,7 @@ public partial class PlayerController : CharacterBody3D
         if (_command.PingPressed)
             SpawnPing();
 
+        IsPullingRope = _command.PullHeld;
         _command = default;
     }
 

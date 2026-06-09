@@ -14,6 +14,14 @@ public partial class RopeConstraint : Node3D
     [Export] public float MassA { get; set; } = 1.0f;
     [Export] public float MassB { get; set; } = 1.0f;
 
+    // Tira-corda: tenendo premuto il tasto la corda si riavvolge fino a MinLength
+    // (per recuperare il partner appeso); al rilascio si riallunga gradualmente.
+    // MinLength non deve scendere sotto l'ingombro dei due corpi (~2.2 m),
+    // altrimenti il vincolo li schiaccia l'uno nell'altro.
+    [Export] public float MinLength { get; set; } = 2.2f;
+    [Export] public float PullSpeed { get; set; } = 2.5f;
+    [Export] public float ReleaseSpeed { get; set; } = 3.0f;
+
     // Da che frazione della lunghezza massima inizia il richiamo elastico.
     [Export(PropertyHint.Range, "0.5,1,0.01")] public float SoftZoneStart { get; set; } = 0.85f;
     // Accelerazione massima del richiamo elastico (m/s^2) a corda completamente tesa.
@@ -24,6 +32,9 @@ public partial class RopeConstraint : Node3D
     // 0 = corda lasca, 1 = al limite.
     public float Tension { get; private set; }
 
+    // Lunghezza effettiva corrente (MaxLength quando nessuno tira).
+    public float CurrentLength { get; private set; }
+
     public Vector3 AnchorA => PlayerA?.GlobalPosition + Vector3.Up ?? Vector3.Zero;
     public Vector3 AnchorB => PlayerB?.GlobalPosition + Vector3.Up ?? Vector3.Zero;
 
@@ -31,6 +42,7 @@ public partial class RopeConstraint : Node3D
     {
         // Deve girare dopo il MoveAndSlide dei player.
         ProcessPhysicsPriority = 10;
+        CurrentLength = MaxLength;
     }
 
     public override void _PhysicsProcess(double delta)
@@ -39,9 +51,16 @@ public partial class RopeConstraint : Node3D
             return;
 
         float dt = (float)delta;
+
+        bool pulling = PlayerA.IsPullingRope || PlayerB.IsPullingRope;
+        CurrentLength = Mathf.MoveToward(
+            CurrentLength,
+            pulling ? Mathf.Min(MinLength, MaxLength) : MaxLength,
+            (pulling ? PullSpeed : ReleaseSpeed) * dt);
+
         Vector3 ab = PlayerB.GlobalPosition - PlayerA.GlobalPosition;
         float distance = ab.Length();
-        Tension = MaxLength > 0f ? Mathf.Clamp(distance / MaxLength, 0f, 1f) : 0f;
+        Tension = CurrentLength > 0f ? Mathf.Clamp(distance / CurrentLength, 0f, 1f) : 0f;
 
         if (distance < 1e-4f)
             return;
@@ -50,10 +69,10 @@ public partial class RopeConstraint : Node3D
         (float weightA, float weightB) = Weights();
 
         // Richiamo elastico progressivo: si sente prima del limite, leggibile.
-        float softStart = SoftZoneStart * MaxLength;
-        if (distance > softStart && MaxLength > softStart)
+        float softStart = SoftZoneStart * CurrentLength;
+        if (distance > softStart && CurrentLength > softStart)
         {
-            float intensity = Mathf.Clamp((distance - softStart) / (MaxLength - softStart), 0f, 1f);
+            float intensity = Mathf.Clamp((distance - softStart) / (CurrentLength - softStart), 0f, 1f);
             Vector3 pull = dir * (Elasticity * intensity * dt);
             PlayerA.Velocity += pull * weightA;
             PlayerB.Velocity -= pull * weightB;
@@ -62,15 +81,15 @@ public partial class RopeConstraint : Node3D
             DampSwing(PlayerB, dir, dt);
         }
 
-        if (distance <= MaxLength)
+        if (distance <= CurrentLength)
             return;
 
-        float excess = distance - MaxLength;
+        float excess = distance - CurrentLength;
 
         if (weightA > 0f)
-            PlayerA.MoveAndCollide(dir * (excess * weightA));
+            Correct(PlayerA, dir * (excess * weightA));
         if (weightB > 0f)
-            PlayerB.MoveAndCollide(-dir * (excess * weightB));
+            Correct(PlayerB, -dir * (excess * weightB));
 
         // Annulla la componente di velocità che allontana i due oltre il limite.
         float divergence = (PlayerB.Velocity - PlayerA.Velocity).Dot(dir);
@@ -85,8 +104,8 @@ public partial class RopeConstraint : Node3D
     // conta la massa inversa (il più leggero viene trascinato di più).
     private (float, float) Weights()
     {
-        bool groundedA = PlayerA!.IsOnFloor();
-        bool groundedB = PlayerB!.IsOnFloor();
+        bool groundedA = IsAnchored(PlayerA!, PlayerB!);
+        bool groundedB = IsAnchored(PlayerB!, PlayerA!);
 
         float inverseA = groundedA ? 0f : 1f / Mathf.Max(MassA, 0.01f);
         float inverseB = groundedB ? 0f : 1f / Mathf.Max(MassB, 0.01f);
@@ -101,6 +120,31 @@ public partial class RopeConstraint : Node3D
         }
 
         return (inverseA / total, inverseB / total);
+    }
+
+    // Un player conta come ancora solo se sta a terra su geometria vera:
+    // stare in piedi sull'altro player non vale (eviterebbe la "scala infinita").
+    private static bool IsAnchored(PlayerController player, PlayerController other)
+    {
+        if (!player.IsOnFloor())
+            return false;
+
+        for (int i = 0; i < player.GetSlideCollisionCount(); i++)
+        {
+            var collision = player.GetSlideCollision(i);
+            if (collision.GetCollider() == other && collision.GetNormal().Y > 0.5f)
+                return false;
+        }
+        return true;
+    }
+
+    // Clamp posizionale che scivola lungo gli ostacoli invece di incastrarsi
+    // (es. risalire aggirando il bordo di una sporgenza).
+    private static void Correct(PlayerController player, Vector3 motion)
+    {
+        var collision = player.MoveAndCollide(motion);
+        if (collision != null)
+            player.MoveAndCollide(collision.GetRemainder().Slide(collision.GetNormal()));
     }
 
     private void DampSwing(PlayerController player, Vector3 ropeDir, float dt)

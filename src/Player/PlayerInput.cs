@@ -26,5 +26,6 @@ public partial class PlayerInput : Node
     public PlayerCommand Capture() => new(
         Input.GetVector($"{Prefix}_left", $"{Prefix}_right", $"{Prefix}_forward", $"{Prefix}_back"),
         Input.IsActionJustPressed($"{Prefix}_jump"),
-        Input.IsActionJustPressed($"{Prefix}_ping"));
+        Input.IsActionJustPressed($"{Prefix}_ping"),
+        Input.IsActionPressed($"{Prefix}_pull"));
 }
