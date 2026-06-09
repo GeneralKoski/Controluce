@@ -17,6 +17,10 @@ public partial class PauseMenu : Control
 
     public override void _UnhandledInput(InputEvent @event)
     {
+        // Online niente pausa: il server non si ferma per un client in pausa.
+        if (Multiplayer.MultiplayerPeer is ENetMultiplayerPeer)
+            return;
+
         if (@event.IsActionPressed("pause"))
         {
             TogglePause();

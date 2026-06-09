@@ -20,6 +20,9 @@ public partial class GameManager : Node
     // Anti-rage: di default respawnano entrambi insieme, all'ultimo checkpoint.
     [Export] public bool RespawnBothPlayers { get; set; } = true;
 
+    // Da client online la progressione la decide il server (via snapshot).
+    public bool NetworkPassive { get; set; }
+
     private int _roomIndex;
     private Node3D? _currentRoom;
     private bool _transitioning;
@@ -114,7 +117,7 @@ public partial class GameManager : Node
 
     private async void OnRoomCompleted()
     {
-        if (_transitioning)
+        if (_transitioning || NetworkPassive)
             return;
 
         bool isLast = _roomIndex + 1 >= RoomPaths.Length;

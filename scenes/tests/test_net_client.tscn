@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cl0netclitst1"]
+
+[ext_resource type="Script" path="res://src/Tests/NetClientTest.cs" id="1_test"]
+
+[node name="NetTest" type="Node"]
+script = ExtResource("1_test")

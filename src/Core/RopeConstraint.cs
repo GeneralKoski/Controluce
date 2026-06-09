@@ -132,6 +132,13 @@ public partial class RopeConstraint : Node3D
         return (inverseA / total, inverseB / total);
     }
 
+    // Stato ricevuto dal server quando si gioca da client (sim locale spenta).
+    public void ApplyNetworkState(float currentLength, float tension)
+    {
+        CurrentLength = currentLength;
+        Tension = tension;
+    }
+
     // Un player conta come ancora solo se sta a terra su geometria vera:
     // stare in piedi sull'altro player non vale (eviterebbe la "scala infinita").
     private static bool IsAnchored(PlayerController player, PlayerController other)

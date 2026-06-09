@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cl0mainscene1"]
+[gd_scene load_steps=14 format=3 uid="uid://cl0mainscene1"]
 
 [ext_resource type="Script" path="res://src/Core/GameManager.cs" id="1_gm"]
 [ext_resource type="PackedScene" uid="uid://cl0playerscn1" path="res://scenes/player.tscn" id="2_player"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://src/Core/RopeVisual.cs" id="6_ropevisual"]
 [ext_resource type="Script" path="res://src/Core/TensionIndicator.cs" id="8_tension"]
 [ext_resource type="Script" path="res://src/Core/PauseMenu.cs" id="9_pause"]
+[ext_resource type="Script" path="res://src/Net/NetworkManager.cs" id="10_net"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p1"]
 albedo_color = Color(0.3, 0.55, 1, 1)
@@ -32,6 +33,15 @@ Fade = NodePath("UI/Fade")
 Rope = NodePath("World/RopeVisual")
 RoomSlot = NodePath("World/RoomSlot")
 RoomPaths = PackedStringArray("res://scenes/rooms/room_01.tscn", "res://scenes/rooms/room_02.tscn", "res://scenes/rooms/room_03.tscn")
+
+[node name="Network" type="Node" parent="." node_paths=PackedStringArray("Game", "Player1", "Player2", "Rope", "ViewP1", "ViewP2")]
+script = ExtResource("10_net")
+Game = NodePath("..")
+Player1 = NodePath("../World/Player1")
+Player2 = NodePath("../World/Player2")
+Rope = NodePath("../World/Rope")
+ViewP1 = NodePath("../Split/ViewP1")
+ViewP2 = NodePath("../Split/ViewP2")
 
 [node name="World" type="Node3D" parent="."]
 

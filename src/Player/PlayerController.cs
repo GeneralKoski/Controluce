@@ -7,6 +7,8 @@ namespace Controluce.Player;
 // i dispositivi di input direttamente.
 public partial class PlayerController : CharacterBody3D
 {
+    [Signal] public delegate void PingedEventHandler(Vector3 position, int phase);
+
     [Export] public Phase PlayerPhase { get; set; } = Phase.Blue;
     [Export] public float Speed { get; set; } = 6.0f;
     [Export] public float Acceleration { get; set; } = 40.0f;
@@ -114,5 +116,6 @@ public partial class PlayerController : CharacterBody3D
         };
         GetParent().AddChild(marker);
         marker.GlobalPosition = GlobalPosition + Vector3.Up * 2.5f;
+        EmitSignal(SignalName.Pinged, marker.GlobalPosition, (int)PlayerPhase);
     }
 }

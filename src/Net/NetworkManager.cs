@@ -1,0 +1,263 @@
+using System.Collections.Generic;
+using Controluce.Core;
+using Controluce.Player;
+using Godot;
+
+namespace Controluce.Net;
+
+// Co-op online con server authoritative (il server è anche il Player 1).
+// La simulazione (player, corda, respawn, stanze) gira SOLO sul server;
+// il client invia i propri PlayerCommand e renderizza gli snapshot ricevuti.
+//
+// Avvio (nessun segreto nel sorgente: porta/host via argomenti o env):
+//   server: godot-mono --path . -- --server [porta]
+//   client: godot-mono --path . -- --client [host] [porta]
+//   oppure CONTROLUCE_MODE=server|client, CONTROLUCE_HOST, CONTROLUCE_PORT
+public partial class NetworkManager : Node
+{
+    private enum Mode { Local, Server, Client }
+
+    private const double InterpolationDelay = 0.1;
+    private const double SnapshotInterval = 1.0 / 30.0;
+
+    [Export] public GameManager? Game { get; set; }
+    [Export] public PlayerController? Player1 { get; set; }
+    [Export] public PlayerController? Player2 { get; set; }
+    [Export] public RopeConstraint? Rope { get; set; }
+    [Export] public Control? ViewP1 { get; set; }
+    [Export] public Control? ViewP2 { get; set; }
+
+    // Per i test: sostituisce la lettura dell'input locale del client.
+    public System.Func<PlayerCommand>? LocalCommandOverride { get; set; }
+
+
+    private Mode _mode = Mode.Local;
+    private Vector2 _remoteMove;
+    private bool _remoteJump;
+    private bool _remotePing;
+    private bool _remotePull;
+    private double _sendTimer;
+
+    private record struct Snap(
+        double Time, int Room,
+        Vector3 P1Pos, Vector3 P1Vel,
+        Vector3 P2Pos, Vector3 P2Vel,
+        float RopeLength, float RopeTension);
+
+    private readonly List<Snap> _buffer = [];
+
+    public override void _Ready()
+    {
+        // Il server consegna il comando remoto a P2 prima dello step dei player.
+        ProcessPhysicsPriority = -5;
+
+        ParseConfig(out string host, out int port);
+        if (_mode == Mode.Local)
+            return;
+
+        var peer = new ENetMultiplayerPeer();
+        if (_mode == Mode.Server)
+        {
+            Error error = peer.CreateServer(port, maxClients: 1);
+            if (error != Error.Ok)
+            {
+                GD.PushError($"Impossibile aprire il server sulla porta {port}: {error}");
+                return;
+            }
+            Multiplayer.MultiplayerPeer = peer;
+            GD.Print($"Server Controluce in ascolto sulla porta {port}");
+
+            // P2 è il giocatore remoto: niente input locale.
+            Player2?.GetNodeOrNull("PlayerInput")?.QueueFree();
+            if (ViewP2 != null)
+                ViewP2.Visible = false;
+
+            if (Player1 != null)
+                Player1.Pinged += (pos, phase) => Rpc(MethodName.RemotePing, pos, phase);
+            if (Player2 != null)
+                Player2.Pinged += (pos, phase) => Rpc(MethodName.RemotePing, pos, phase);
+        }
+        else
+        {
+            Error error = peer.CreateClient(host, port);
+            if (error != Error.Ok)
+            {
+                GD.PushError($"Impossibile connettersi a {host}:{port}: {error}");
+                return;
+            }
+            Multiplayer.MultiplayerPeer = peer;
+            GD.Print($"Connessione a {host}:{port}...");
+            Multiplayer.ConnectedToServer += () => GD.Print("Connesso al server");
+
+            // Niente simulazione locale: si renderizza lo stato del server.
+            Player1?.SetPhysicsProcess(false);
+            Player1?.GetNodeOrNull("PlayerInput")?.QueueFree();
+            Player2?.SetPhysicsProcess(false);
+            Player2?.GetNodeOrNull("PlayerInput")?.QueueFree();
+            Rope?.SetPhysicsProcess(false);
+            Game?.SetPhysicsProcess(false);
+            if (Game != null)
+                Game.NetworkPassive = true;
+            if (ViewP1 != null)
+                ViewP1.Visible = false;
+        }
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        if (_mode == Mode.Server)
+        {
+            Player2?.SetCommand(new PlayerCommand(_remoteMove, _remoteJump, _remotePing, _remotePull));
+            _remoteJump = false;
+            _remotePing = false;
+        }
+        else if (_mode == Mode.Client && IsConnected())
+        {
+            PlayerCommand command = LocalCommandOverride?.Invoke() ?? PlayerInput.CaptureFrom("p1");
+            RpcId(1, MethodName.SubmitCommand, command.MoveAxis, command.JumpPressed, command.PingPressed, command.PullHeld);
+        }
+    }
+
+    public override void _Process(double delta)
+    {
+        if (_mode == Mode.Server)
+        {
+            _sendTimer -= delta;
+            if (_sendTimer <= 0.0 && Multiplayer.GetPeers().Length > 0
+                && Game != null && Player1 != null && Player2 != null && Rope != null)
+            {
+                _sendTimer = SnapshotInterval;
+                Rpc(MethodName.Snapshot, Game.CurrentRoomIndex,
+                    Player1.GlobalPosition, Player1.Velocity,
+                    Player2.GlobalPosition, Player2.Velocity,
+                    Rope.CurrentLength, Rope.Tension);
+            }
+        }
+        else if (_mode == Mode.Client)
+        {
+            ApplySnapshots();
+        }
+    }
+
+    private bool IsConnected() =>
+        Multiplayer.MultiplayerPeer?.GetConnectionStatus() == MultiplayerPeer.ConnectionStatus.Connected;
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void SubmitCommand(Vector2 move, bool jump, bool ping, bool pull)
+    {
+        if (_mode != Mode.Server)
+            return;
+
+        _remoteMove = move;
+        _remoteJump |= jump;
+        _remotePing |= ping;
+        _remotePull = pull;
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.Authority, TransferMode = MultiplayerPeer.TransferModeEnum.Unreliable)]
+    private void Snapshot(int room, Vector3 p1Pos, Vector3 p1Vel, Vector3 p2Pos, Vector3 p2Vel, float ropeLength, float ropeTension)
+    {
+        _buffer.Add(new Snap(Now(), room, p1Pos, p1Vel, p2Pos, p2Vel, ropeLength, ropeTension));
+        if (_buffer.Count > 120)
+            _buffer.RemoveRange(0, _buffer.Count - 120);
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.Authority, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void RemotePing(Vector3 position, int phase)
+    {
+        if (Player1?.GetParent() is not Node parent)
+            return;
+
+        var marker = new PingMarker
+        {
+            Color = (Phase)phase == Phase.Blue ? new Color(0.4f, 0.65f, 1f) : new Color(1f, 0.45f, 0.4f),
+        };
+        parent.AddChild(marker);
+        marker.GlobalPosition = position;
+    }
+
+    private void ApplySnapshots()
+    {
+        if (_buffer.Count == 0 || Player1 == null || Player2 == null)
+            return;
+
+        Snap latest = _buffer[^1];
+        if (Game != null && latest.Room != Game.CurrentRoomIndex)
+            Game.LoadRoom(latest.Room);
+
+        double renderTime = Now() - InterpolationDelay;
+        Snap from = _buffer[0];
+        Snap to = latest;
+        for (int i = 0; i < _buffer.Count - 1; i++)
+        {
+            if (_buffer[i].Time <= renderTime && _buffer[i + 1].Time >= renderTime)
+            {
+                from = _buffer[i];
+                to = _buffer[i + 1];
+                break;
+            }
+        }
+
+        float t = to.Time > from.Time
+            ? (float)Mathf.Clamp((renderTime - from.Time) / (to.Time - from.Time), 0.0, 1.0)
+            : 1f;
+
+        Player1.GlobalPosition = from.P1Pos.Lerp(to.P1Pos, t);
+        Player1.Velocity = from.P1Vel.Lerp(to.P1Vel, t);
+        Player2.GlobalPosition = from.P2Pos.Lerp(to.P2Pos, t);
+        Player2.Velocity = from.P2Vel.Lerp(to.P2Vel, t);
+        Rope?.ApplyNetworkState(
+            Mathf.Lerp(from.RopeLength, to.RopeLength, t),
+            Mathf.Lerp(from.RopeTension, to.RopeTension, t));
+
+        while (_buffer.Count > 2 && _buffer[1].Time < renderTime - 1.0)
+            _buffer.RemoveAt(0);
+    }
+
+    private static double Now() => Time.GetTicksMsec() / 1000.0;
+
+    private void ParseConfig(out string host, out int port)
+    {
+        host = OS.GetEnvironment("CONTROLUCE_HOST");
+        if (string.IsNullOrEmpty(host))
+            host = "127.0.0.1";
+        port = int.TryParse(OS.GetEnvironment("CONTROLUCE_PORT"), out int envPort) ? envPort : 7777;
+
+        string mode = OS.GetEnvironment("CONTROLUCE_MODE").ToLowerInvariant();
+
+        string[] args = OS.GetCmdlineUserArgs();
+        for (int i = 0; i < args.Length; i++)
+        {
+            switch (args[i])
+            {
+                case "--server":
+                    mode = "server";
+                    if (i + 1 < args.Length && int.TryParse(args[i + 1], out int serverPort))
+                    {
+                        port = serverPort;
+                        i++;
+                    }
+                    break;
+                case "--client":
+                    mode = "client";
+                    if (i + 1 < args.Length && !args[i + 1].StartsWith("--"))
+                    {
+                        host = args[++i];
+                        if (i + 1 < args.Length && int.TryParse(args[i + 1], out int clientPort))
+                        {
+                            port = clientPort;
+                            i++;
+                        }
+                    }
+                    break;
+            }
+        }
+
+        _mode = mode switch
+        {
+            "server" => Mode.Server,
+            "client" => Mode.Client,
+            _ => Mode.Local,
+        };
+    }
+}

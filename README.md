@@ -16,9 +16,26 @@ dotnet build
 # Apri l'editor
 godot-mono --editor --path .
 
-# Avvia il gioco
+# Avvia il gioco (split-screen locale)
 godot-mono --path .
 ```
+
+## Online co-op (server authoritative)
+
+La simulazione gira solo sul server (che è anche il Player 1); il client invia
+i comandi e renderizza lo stato ricevuto, giocando come Player 2 con i
+controlli di P1 (WASD ecc.).
+
+```bash
+# Host (gioca come P1)
+godot-mono --path . -- --server 7777
+
+# Ospite (gioca come P2)
+godot-mono --path . -- --client <ip-host> 7777
+```
+
+In alternativa: variabili d'ambiente `CONTROLUCE_MODE` (server/client),
+`CONTROLUCE_HOST`, `CONTROLUCE_PORT`. Nessuna configurazione nel sorgente.
 
 ## Stato
 
@@ -34,7 +51,11 @@ godot-mono --path .
 - [x] M9 — Audio & feedback
 - [x] M10 — Tooling level design
 - [x] M11 — Refactor authoritative
-- [ ] M12 — Online co-op (fase 2)
+- [x] M12 — Online co-op (server authoritative)
+
+Extra oltre le milestone: progressione su 3 stanze con transizioni, pedane a
+peso, piattaforme mobili/porte/ascensori, blocchi a fase alternante, tira-corda
+con feedback, dondolio controllabile, menu pausa, musica ambient.
 
 ## Level design
 
@@ -59,6 +80,7 @@ Per prototipare una stanza nuova in pochi minuti:
 | Ping "guarda qui" | E | Tasto B gamepad / Shift |
 | Tira la corda (tieni premuto) | Q | Tasto X gamepad / Ctrl |
 | Dondola (da appeso) | A/D nel verso del moto | Stick nel verso del moto |
+| Pausa | Esc | Start |
 
 ## Test
 
@@ -72,4 +94,14 @@ godot-mono --headless --path . scenes/tests/test_exitzone.tscn
 godot-mono --headless --path . scenes/tests/test_checkpoint.tscn
 godot-mono --headless --path . scenes/tests/test_pull.tscn
 godot-mono --headless --path . scenes/tests/test_swing.tscn
+godot-mono --headless --path . scenes/tests/test_mechanics.tscn
+godot-mono --headless --path . scenes/tests/test_progression.tscn
+```
+
+Test di rete (due processi su loopback):
+
+```bash
+CONTROLUCE_MODE=server CONTROLUCE_PORT=39555 godot-mono --headless --path . scenes/tests/test_net_server.tscn &
+sleep 4
+CONTROLUCE_MODE=client CONTROLUCE_PORT=39555 godot-mono --headless --path . scenes/tests/test_net_client.tscn
 ```
