@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Controluce.Core;
+using Controluce.Level;
 using Controluce.Player;
 using Godot;
 
@@ -43,9 +44,11 @@ public partial class NetworkManager : Node
         double Time, int Room,
         Vector3 P1Pos, Vector3 P1Vel,
         Vector3 P2Pos, Vector3 P2Vel,
-        float RopeLength, float RopeTension);
+        float RopeLength, float RopeTension,
+        Vector3[] Movers);
 
     private readonly List<Snap> _buffer = [];
+    private readonly List<MovingPlatform> _movers = [];
 
     public override void _Ready()
     {
@@ -55,6 +58,11 @@ public partial class NetworkManager : Node
         ParseConfig(out string host, out int port);
         if (_mode == Mode.Local)
             return;
+
+        // L'elenco dei mover cambia a ogni stanza (l'ordine dell'albero è
+        // identico sui due peer, quindi gli indici coincidono).
+        if (Game != null)
+            Game.RoomLoaded += _ => RefreshMovers();
 
         var peer = new ENetMultiplayerPeer();
         if (_mode == Mode.Server)
@@ -136,10 +144,13 @@ public partial class NetworkManager : Node
                 && Game != null && Player1 != null && Player2 != null && Rope != null)
             {
                 _sendTimer = SnapshotInterval;
+                var movers = new Vector3[_movers.Count];
+                for (int i = 0; i < _movers.Count; i++)
+                    movers[i] = _movers[i].GlobalPosition;
                 Rpc(MethodName.Snapshot, Game.CurrentRoomIndex,
                     Player1.GlobalPosition, Player1.Velocity,
                     Player2.GlobalPosition, Player2.Velocity,
-                    Rope.CurrentLength, Rope.Tension);
+                    Rope.CurrentLength, Rope.Tension, movers);
             }
         }
         else if (_mode == Mode.Client)
@@ -164,9 +175,9 @@ public partial class NetworkManager : Node
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority, TransferMode = MultiplayerPeer.TransferModeEnum.Unreliable)]
-    private void Snapshot(int room, Vector3 p1Pos, Vector3 p1Vel, Vector3 p2Pos, Vector3 p2Vel, float ropeLength, float ropeTension)
+    private void Snapshot(int room, Vector3 p1Pos, Vector3 p1Vel, Vector3 p2Pos, Vector3 p2Vel, float ropeLength, float ropeTension, Vector3[] movers)
     {
-        _buffer.Add(new Snap(Now(), room, p1Pos, p1Vel, p2Pos, p2Vel, ropeLength, ropeTension));
+        _buffer.Add(new Snap(Now(), room, p1Pos, p1Vel, p2Pos, p2Vel, ropeLength, ropeTension, movers));
         if (_buffer.Count > 120)
             _buffer.RemoveRange(0, _buffer.Count - 120);
     }
@@ -219,8 +230,27 @@ public partial class NetworkManager : Node
             Mathf.Lerp(from.RopeLength, to.RopeLength, t),
             Mathf.Lerp(from.RopeTension, to.RopeTension, t));
 
+        int moverCount = Mathf.Min(_movers.Count, Mathf.Min(from.Movers.Length, to.Movers.Length));
+        for (int i = 0; i < moverCount; i++)
+            _movers[i].GlobalPosition = from.Movers[i].Lerp(to.Movers[i], t);
+
         while (_buffer.Count > 2 && _buffer[1].Time < renderTime - 1.0)
             _buffer.RemoveAt(0);
+    }
+
+    private void RefreshMovers()
+    {
+        _movers.Clear();
+        foreach (Node node in GetTree().GetNodesInGroup("mover"))
+        {
+            if (node is not MovingPlatform mover)
+                continue;
+
+            _movers.Add(mover);
+            // Sul client i mover sono renderizzati dagli snapshot, non simulati.
+            if (_mode == Mode.Client)
+                mover.SetPhysicsProcess(false);
+        }
     }
 
     private static double Now() => Time.GetTicksMsec() / 1000.0;

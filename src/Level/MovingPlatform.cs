@@ -44,6 +44,7 @@ public partial class MovingPlatform : AnimatableBody3D, IActivatable
         {
             _origin = Position;
             SyncToPhysics = true;
+            AddToGroup("mover");
         }
     }
 
