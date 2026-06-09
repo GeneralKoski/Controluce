@@ -75,7 +75,8 @@ Per prototipare una stanza nuova in pochi minuti:
 
 | Azione | Player 1 | Player 2 |
 | --- | --- | --- |
-| Movimento | WASD | Stick sinistro gamepad / Frecce |
+| Movimento (relativo alla camera) | WASD | Stick sinistro gamepad / Frecce |
+| Ruota camera | Mouse | Stick destro gamepad |
 | Salto | Spazio | Tasto A gamepad / Invio |
 | Ping "guarda qui" | E | Tasto B gamepad / Shift |
 | Tira la corda (tieni premuto) | Q | Tasto X gamepad / Ctrl |

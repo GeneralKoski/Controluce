@@ -8,6 +8,8 @@ namespace Controluce.Player;
 public partial class PlayerInput : Node
 {
     [Export] public string Prefix { get; set; } = "p1";
+    // Se impostato, l'asse di movimento diventa relativo allo yaw della camera.
+    [Export] public CameraRig? Camera { get; set; }
 
     private PlayerController _controller = null!;
 
@@ -23,11 +25,19 @@ public partial class PlayerInput : Node
         _controller.SetCommand(Capture());
     }
 
-    public PlayerCommand Capture() => CaptureFrom(Prefix);
+    public PlayerCommand Capture() => CaptureFrom(Prefix, Camera);
 
-    public static PlayerCommand CaptureFrom(string prefix) => new(
-        Input.GetVector($"{prefix}_left", $"{prefix}_right", $"{prefix}_forward", $"{prefix}_back"),
-        Input.IsActionJustPressed($"{prefix}_jump"),
-        Input.IsActionJustPressed($"{prefix}_ping"),
-        Input.IsActionPressed($"{prefix}_pull"));
+    public static PlayerCommand CaptureFrom(string prefix, CameraRig? camera = null)
+    {
+        var command = new PlayerCommand(
+            Input.GetVector($"{prefix}_left", $"{prefix}_right", $"{prefix}_forward", $"{prefix}_back"),
+            Input.IsActionJustPressed($"{prefix}_jump"),
+            Input.IsActionJustPressed($"{prefix}_ping"),
+            Input.IsActionPressed($"{prefix}_pull"));
+
+        if (camera != null)
+            command = command with { MoveAxis = command.MoveAxis.Rotated(-camera.Yaw) };
+
+        return command;
+    }
 }

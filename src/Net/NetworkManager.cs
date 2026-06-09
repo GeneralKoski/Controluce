@@ -32,6 +32,7 @@ public partial class NetworkManager : Node
 
 
     private Mode _mode = Mode.Local;
+    private CameraRig? _clientCamera;
     private Vector2 _remoteMove;
     private bool _remoteJump;
     private bool _remotePing;
@@ -100,6 +101,14 @@ public partial class NetworkManager : Node
                 Game.NetworkPassive = true;
             if (ViewP1 != null)
                 ViewP1.Visible = false;
+
+            // Il client gioca P2 a schermo pieno con i binding di P1: mouse sulla sua camera.
+            _clientCamera = ViewP2?.GetNodeOrNull<CameraRig>("ViewportP2/CameraRig");
+            if (_clientCamera != null)
+            {
+                _clientCamera.UseMouse = true;
+                Input.MouseMode = Input.MouseModeEnum.Captured;
+            }
         }
     }
 
@@ -113,7 +122,7 @@ public partial class NetworkManager : Node
         }
         else if (_mode == Mode.Client && IsConnected())
         {
-            PlayerCommand command = LocalCommandOverride?.Invoke() ?? PlayerInput.CaptureFrom("p1");
+            PlayerCommand command = LocalCommandOverride?.Invoke() ?? PlayerInput.CaptureFrom("p1", _clientCamera);
             RpcId(1, MethodName.SubmitCommand, command.MoveAxis, command.JumpPressed, command.PingPressed, command.PullHeld);
         }
     }

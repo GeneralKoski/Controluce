@@ -33,6 +33,7 @@ public partial class PauseMenu : Control
         bool paused = !GetTree().Paused;
         GetTree().Paused = paused;
         Visible = paused;
+        Input.MouseMode = paused ? Input.MouseModeEnum.Visible : Input.MouseModeEnum.Captured;
     }
 
     private void OnRestart()

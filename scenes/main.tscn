@@ -60,6 +60,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 2, -2)
 [node name="MeshInstance3D" parent="World/Player1"]
 surface_material_override/0 = SubResource("StandardMaterial3D_p1")
 
+[node name="PlayerInput" parent="World/Player1" node_paths=PackedStringArray("Camera")]
+Camera = NodePath("../../../Split/ViewP1/ViewportP1/CameraRig")
+
 [node name="Player2" parent="World" instance=ExtResource("2_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2, -2)
 PlayerPhase = 1
@@ -67,8 +70,9 @@ PlayerPhase = 1
 [node name="MeshInstance3D" parent="World/Player2"]
 surface_material_override/0 = SubResource("StandardMaterial3D_p2")
 
-[node name="PlayerInput" parent="World/Player2"]
+[node name="PlayerInput" parent="World/Player2" node_paths=PackedStringArray("Camera")]
 Prefix = "p2"
+Camera = NodePath("../../../Split/ViewP2/ViewportP2/CameraRig")
 
 [node name="Rope" type="Node3D" parent="World" node_paths=PackedStringArray("PlayerA", "PlayerB")]
 script = ExtResource("5_rope")
@@ -99,6 +103,7 @@ render_target_update_mode = 4
 [node name="CameraRig" type="Node3D" parent="Split/ViewP1/ViewportP1" node_paths=PackedStringArray("Target")]
 script = ExtResource("3_camrig")
 Target = NodePath("../../../../World/Player1")
+UseMouse = true
 
 [node name="Camera3D" type="Camera3D" parent="Split/ViewP1/ViewportP1/CameraRig"]
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 6, 9)
@@ -116,6 +121,7 @@ render_target_update_mode = 4
 script = ExtResource("3_camrig")
 Target = NodePath("../../../../World/Player2")
 ViewPhase = 1
+UseStick = true
 
 [node name="Camera3D" type="Camera3D" parent="Split/ViewP2/ViewportP2/CameraRig"]
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 6, 9)
