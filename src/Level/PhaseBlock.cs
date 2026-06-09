@@ -8,6 +8,7 @@ public partial class PhaseBlock : StaticBody3D
 {
     private static readonly Color BlueColor = new(0.25f, 0.5f, 1f);
     private static readonly Color RedColor = new(1f, 0.3f, 0.25f);
+    private static readonly Color NeutralColor = new(0.55f, 0.57f, 0.6f);
 
     private Phase _phase = Phase.Blue;
     private Vector3 _size = new(2f, 0.5f, 2f);
@@ -42,7 +43,12 @@ public partial class PhaseBlock : StaticBody3D
         var shape = new CollisionShape3D { Shape = new BoxShape3D { Size = _size } };
         AddChild(shape);
 
-        Color color = _phase == Phase.Blue ? BlueColor : RedColor;
+        Color color = _phase switch
+        {
+            Phase.Blue => BlueColor,
+            Phase.Red => RedColor,
+            _ => NeutralColor,
+        };
         var mesh = new BoxMesh { Size = _size };
 
         var solid = new MeshInstance3D
@@ -52,6 +58,9 @@ public partial class PhaseBlock : StaticBody3D
             MaterialOverride = new StandardMaterial3D { AlbedoColor = color },
         };
         AddChild(solid);
+
+        if (_phase == Phase.Neutral)
+            return;
 
         var ghost = new MeshInstance3D
         {

@@ -4,6 +4,7 @@ public enum Phase
 {
     Blue,
     Red,
+    Neutral,
 }
 
 public static class PhaseLayers
@@ -21,14 +22,22 @@ public static class PhaseLayers
     public const uint RenderBlueGhost = 1 << 3;
     public const uint RenderRedGhost = 1 << 4;
 
-    public static uint GeometryLayerFor(Phase phase) =>
-        phase == Phase.Blue ? BlueGeometry : RedGeometry;
+    public static uint GeometryLayerFor(Phase phase) => phase switch
+    {
+        Phase.Blue => BlueGeometry,
+        Phase.Red => RedGeometry,
+        _ => Neutral,
+    };
 
     public static uint PlayerCollisionMaskFor(Phase phase) =>
         Neutral | Player | GeometryLayerFor(phase);
 
-    public static uint SolidRenderLayerFor(Phase phase) =>
-        phase == Phase.Blue ? RenderBlueSolid : RenderRedSolid;
+    public static uint SolidRenderLayerFor(Phase phase) => phase switch
+    {
+        Phase.Blue => RenderBlueSolid,
+        Phase.Red => RenderRedSolid,
+        _ => RenderNeutral,
+    };
 
     public static uint GhostRenderLayerFor(Phase phase) =>
         phase == Phase.Blue ? RenderBlueGhost : RenderRedGhost;

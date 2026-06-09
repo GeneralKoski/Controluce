@@ -16,12 +16,26 @@ public partial class ScreenshotTest : Node
     public override void _Process(double delta)
     {
         _frames++;
-        if (_frames < 150)
-            return;
 
-        Save("Main/Split/ViewP1/ViewportP1", "/tmp/controluce_p1.png");
-        Save("Main/Split/ViewP2/ViewportP2", "/tmp/controluce_p2.png");
-        GetTree().Quit();
+        if (_frames == 150)
+        {
+            Save("Main/Split/ViewP1/ViewportP1", "/tmp/controluce_p1.png");
+            Save("Main/Split/ViewP2/ViewportP2", "/tmp/controluce_p2.png");
+
+            // Vista dall'alto dell'intera stanza per il check della geometria.
+            var rig = GetNode<Node3D>("Main/Split/ViewP1/ViewportP1/CameraRig");
+            rig.SetPhysicsProcess(false);
+            var camera = rig.GetNode<Camera3D>("Camera3D");
+            camera.CullMask = uint.MaxValue;
+            camera.GlobalPosition = new Vector3(26, 22, -19);
+            camera.LookAt(new Vector3(0, 0, -19));
+        }
+
+        if (_frames == 160)
+        {
+            Save("Main/Split/ViewP1/ViewportP1", "/tmp/controluce_overview.png");
+            GetTree().Quit();
+        }
     }
 
     private void Save(string viewportPath, string filePath)

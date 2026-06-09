@@ -24,12 +24,12 @@ godot-mono --path .
 
 - [x] M0 — Setup progetto
 - [x] M1 — Player controller base
-- [ ] M2 — Split-screen 2 player locali
-- [ ] M3 — Sistema fasi (blu/rosso)
-- [ ] M4 — Vista asimmetrica
-- [ ] M5 — La corda
-- [ ] M6 — Meccanica contrappeso
-- [ ] M7 — Prima stanza puzzle
+- [x] M2 — Split-screen 2 player locali
+- [x] M3 — Sistema fasi (blu/rosso)
+- [x] M4 — Vista asimmetrica
+- [x] M5 — La corda
+- [x] M6 — Meccanica contrappeso
+- [x] M7 — Prima stanza puzzle
 - [ ] M8 — Checkpoint & respawn
 - [ ] M9 — Audio & feedback
 - [ ] M10 — Tooling level design

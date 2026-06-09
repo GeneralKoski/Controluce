@@ -1,20 +1,11 @@
-[gd_scene load_steps=15 format=3 uid="uid://cl0mainscene1"]
+[gd_scene load_steps=12 format=3 uid="uid://cl0mainscene1"]
 
 [ext_resource type="Script" path="res://src/Core/GameManager.cs" id="1_gm"]
 [ext_resource type="PackedScene" uid="uid://cl0playerscn1" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://src/Player/CameraRig.cs" id="3_camrig"]
-[ext_resource type="Script" path="res://src/Level/PhaseBlock.cs" id="4_phaseblock"]
 [ext_resource type="Script" path="res://src/Core/RopeConstraint.cs" id="5_rope"]
 [ext_resource type="Script" path="res://src/Core/RopeVisual.cs" id="6_ropevisual"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
-size = Vector3(24, 1, 24)
-
-[sub_resource type="BoxMesh" id="BoxMesh_floor"]
-size = Vector3(24, 1, 24)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
-albedo_color = Color(0.35, 0.38, 0.42, 1)
+[ext_resource type="PackedScene" uid="uid://cl0room010001" path="res://scenes/rooms/room_01.tscn" id="7_room"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p1"]
 albedo_color = Color(0.3, 0.55, 1, 1)
@@ -31,8 +22,11 @@ sky_material = SubResource("ProceduralSkyMaterial_sky")
 background_mode = 2
 sky = SubResource("Sky_main")
 
-[node name="Main" type="Node"]
+[node name="Main" type="Node" node_paths=PackedStringArray("Player1", "Player2", "Banner")]
 script = ExtResource("1_gm")
+Player1 = NodePath("World/Player1")
+Player2 = NodePath("World/Player2")
+Banner = NodePath("UI/Banner")
 
 [node name="World" type="Node3D" parent="."]
 
@@ -43,24 +37,16 @@ environment = SubResource("Environment_main")
 transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 10, 0)
 shadow_enabled = true
 
-[node name="Floor" type="StaticBody3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Floor"]
-shape = SubResource("BoxShape3D_floor")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="World/Floor"]
-mesh = SubResource("BoxMesh_floor")
-surface_material_override/0 = SubResource("StandardMaterial3D_floor")
+[node name="Room01" parent="World" instance=ExtResource("7_room")]
 
 [node name="Player1" parent="World" instance=ExtResource("2_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 2, -2)
 
 [node name="MeshInstance3D" parent="World/Player1"]
 surface_material_override/0 = SubResource("StandardMaterial3D_p1")
 
 [node name="Player2" parent="World" instance=ExtResource("2_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2, -2)
 PlayerPhase = 1
 
 [node name="MeshInstance3D" parent="World/Player2"]
@@ -68,26 +54,6 @@ surface_material_override/0 = SubResource("StandardMaterial3D_p2")
 
 [node name="PlayerInput" parent="World/Player2"]
 Prefix = "p2"
-
-[node name="BlueLow" type="StaticBody3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1, -4)
-script = ExtResource("4_phaseblock")
-Size = Vector3(4, 0.5, 4)
-
-[node name="RedLow" type="StaticBody3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1, -4)
-script = ExtResource("4_phaseblock")
-BlockPhase = 1
-Size = Vector3(4, 0.5, 4)
-
-[node name="BlueHigh" type="StaticBody3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2.5, -8)
-script = ExtResource("4_phaseblock")
-
-[node name="RedHigh" type="StaticBody3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.5, -8)
-script = ExtResource("4_phaseblock")
-BlockPhase = 1
 
 [node name="Rope" type="Node3D" parent="World" node_paths=PackedStringArray("PlayerA", "PlayerB")]
 script = ExtResource("5_rope")
@@ -138,3 +104,17 @@ ViewPhase = 1
 
 [node name="Camera3D" type="Camera3D" parent="Split/ViewP2/ViewportP2/CameraRig"]
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 6, 9)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Banner" type="Label" parent="UI"]
+visible = false
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300
+offset_right = 300
+offset_top = 40
+offset_bottom = 100
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
