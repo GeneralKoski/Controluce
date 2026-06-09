@@ -69,7 +69,8 @@ buffer, camera orbitale con occlusione, menu principale con lobby online,
 opzioni e salvataggio progressi, menu pausa, musica ambient, occhi/particelle
 sui player e griglia procedurale, ambiente "controluce" (sole basso, glow,
 SSAO, nebbia, ombre morbide) con blocchi emissivi e geometria fantasma
-fresnel.
+fresnel, skin procedurali con scambio ruoli, indicatore del partner fuori
+vista (freccia sul bordo, sagoma "a raggi X" dietro i muri).
 
 ## Level design
 
@@ -99,7 +100,14 @@ Per prototipare una stanza nuova in pochi minuti:
 
 ## Test
 
-Test headless (escono con codice 0/1 e stampano PASS/FAIL):
+Test headless (escono con codice 0/1 e stampano PASS/FAIL). Tutta la suite,
+test di rete inclusi, con:
+
+```bash
+./run_tests.sh
+```
+
+Oppure singolarmente:
 
 ```bash
 godot-mono --headless --path . scenes/tests/test_phases.tscn
