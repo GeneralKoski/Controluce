@@ -22,8 +22,12 @@ godot-mono --path .
 
 Dal menu: **Gioca** (split-screen), **Continua** (riprende dall'ultima stanza
 raggiunta, salvata in `user://save.cfg`), **Online** (ospita o unisciti via
-IP/porta), **Opzioni** (volume, sensibilità mouse/stick, modalità respawn —
-salvate in `user://settings.cfg`).
+IP/porta), **Personaggi** (skin procedurali separate per P1 e P2 e scambio
+ruoli blu/rosso), **Opzioni** (volume, sensibilità mouse/stick, modalità
+respawn) — tutto salvato in `user://settings.cfg`.
+
+Online l'aspetto è concordato: l'host detta la propria skin P1 e lo scambio
+ruoli, l'ospite porta la propria skin P2.
 
 ## Online co-op (server authoritative)
 
@@ -107,6 +111,7 @@ godot-mono --headless --path . scenes/tests/test_pull.tscn
 godot-mono --headless --path . scenes/tests/test_swing.tscn
 godot-mono --headless --path . scenes/tests/test_mechanics.tscn
 godot-mono --headless --path . scenes/tests/test_progression.tscn
+godot-mono --headless --path . scenes/tests/test_skins.tscn
 ```
 
 Test di rete (due processi su loopback):
