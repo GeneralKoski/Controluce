@@ -121,6 +121,7 @@ godot-mono --headless --path . scenes/tests/test_swing.tscn
 godot-mono --headless --path . scenes/tests/test_mechanics.tscn
 godot-mono --headless --path . scenes/tests/test_progression.tscn
 godot-mono --headless --path . scenes/tests/test_skins.tscn
+godot-mono --headless --path . scenes/tests/test_room04.tscn
 ```
 
 Test di rete (due processi su loopback):
