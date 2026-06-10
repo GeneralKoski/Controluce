@@ -56,7 +56,7 @@ Banner = NodePath("UI/Banner")
 Fade = NodePath("UI/Fade")
 Rope = NodePath("World/RopeVisual")
 RoomSlot = NodePath("World/RoomSlot")
-RoomPaths = PackedStringArray("res://scenes/rooms/room_01.tscn", "res://scenes/rooms/room_02.tscn", "res://scenes/rooms/room_03.tscn", "res://scenes/rooms/room_04.tscn")
+RoomPaths = PackedStringArray("res://scenes/rooms/room_01.tscn", "res://scenes/rooms/room_02.tscn", "res://scenes/rooms/room_03.tscn", "res://scenes/rooms/room_04.tscn", "res://scenes/rooms/room_05.tscn")
 
 [node name="Network" type="Node" parent="." node_paths=PackedStringArray("Game", "Player1", "Player2", "Rope", "ViewP1", "ViewP2")]
 script = ExtResource("10_net")

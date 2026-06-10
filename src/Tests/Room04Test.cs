@@ -106,7 +106,7 @@ public partial class Room04Test : Node
         if (_ticks == 1260)
         {
             var banner = GetNode<Label>("Main/UI/Banner");
-            Check(banner.Visible && banner.Text.Contains("completato"),
+            Check(banner.Visible && banner.Text.Contains("completat"),
                 $"uscita scattata con entrambi dentro (banner: \"{banner.Text}\")");
 
             GD.Print(_failed ? "ROOM04 TEST: FAIL" : "ROOM04 TEST: PASS");
