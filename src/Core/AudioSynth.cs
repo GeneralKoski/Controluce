@@ -94,6 +94,54 @@ public static class AudioSynth
         return wav;
     }
 
+    // Arpeggio ascendente per il completamento della stanza.
+    public static AudioStreamWav Fanfare(float gain = 0.3f)
+    {
+        float[][] notes = [[523f, 0.14f], [659f, 0.14f], [784f, 0.14f], [1047f, 0.5f]];
+        int total = 0;
+        var parts = new byte[notes.Length][];
+        for (int n = 0; n < notes.Length; n++)
+        {
+            parts[n] = ToneSamples(notes[n][0], notes[n][1], gain);
+            total += parts[n].Length;
+        }
+
+        var data = new byte[total];
+        int offset = 0;
+        foreach (byte[] part in parts)
+        {
+            part.CopyTo(data, offset);
+            offset += part.Length;
+        }
+        return Wrap(data);
+    }
+
+    // Ronzio caldo in loop per il portale d'uscita: cicli interi sui 2 secondi.
+    public static AudioStreamWav Hum(float gain = 0.2f)
+    {
+        const float seconds = 2f;
+        int count = (int)(MixRate * seconds);
+        var data = new byte[count * 2];
+        float[] voices = [110f, 165f, 222f];
+
+        for (int i = 0; i < count; i++)
+        {
+            float t = i / (float)MixRate;
+            float sample = 0f;
+            for (int v = 0; v < voices.Length; v++)
+            {
+                float lfo = 0.7f + 0.3f * Mathf.Sin(Mathf.Tau * 0.5f * t + v * 2.1f);
+                sample += Mathf.Sin(Mathf.Tau * voices[v] * t) * lfo;
+            }
+            WriteSample(data, i, sample / voices.Length * gain);
+        }
+
+        var wav = Wrap(data);
+        wav.LoopMode = AudioStreamWav.LoopModeEnum.Forward;
+        wav.LoopEnd = count;
+        return wav;
+    }
+
     private static byte[] ToneSamples(float frequency, float seconds, float gain)
     {
         int count = (int)(MixRate * seconds);

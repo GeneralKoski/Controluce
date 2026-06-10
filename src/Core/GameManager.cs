@@ -153,6 +153,11 @@ public partial class GameManager : Node
 
         bool isLast = _roomIndex + 1 >= RoomPaths.Length;
         ShowBanner(isLast ? "Hai completato Controluce!" : "Stanza completata!");
+
+        var fanfare = new AudioStreamPlayer { Stream = AudioSynth.Fanfare(), VolumeDb = -4f };
+        AddChild(fanfare);
+        fanfare.Finished += fanfare.QueueFree;
+        fanfare.Play();
         if (isLast)
             return;
 

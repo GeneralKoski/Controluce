@@ -24,6 +24,14 @@ public partial class ExitZone : Area3D
         BodyExited += OnBodyExited;
 
         BuildBeam();
+
+        AddChild(new AudioStreamPlayer3D
+        {
+            Stream = AudioSynth.Hum(),
+            Autoplay = true,
+            VolumeDb = -14f,
+            MaxDistance = 14f,
+        });
     }
 
     // Portale: colonna di luce calda, visibile a entrambi i player,
