@@ -103,6 +103,39 @@ script = ExtResource("1_block")
 BlockPhase = 2
 Size = Vector3(8, 0.5, 4)
 
+[node name="Hint1" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, -6.5)
+pixel_size = 0.012
+billboard = 1
+modulate = Color(1, 0.92, 0.8, 0.92)
+outline_modulate = Color(0.2, 0.08, 0.02, 0.9)
+text = "Vedi solidi solo i blocchi del TUO colore:
+l'altro percorso lo vede il compagno."
+font_size = 48
+outline_size = 14
+
+[node name="Hint2" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, -17)
+pixel_size = 0.012
+billboard = 1
+modulate = Color(1, 0.92, 0.8, 0.92)
+outline_modulate = Color(0.2, 0.08, 0.02, 0.9)
+text = "La corda vi lega (6 metri):
+chi è a terra fa da ancora per l'altro."
+font_size = 48
+outline_size = 14
+
+[node name="Hint3" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 6.2, -23)
+pixel_size = 0.012
+billboard = 1
+modulate = Color(1, 0.92, 0.8, 0.92)
+outline_modulate = Color(0.2, 0.08, 0.02, 0.9)
+text = "Tieni premuto Q (o Ctrl / X gamepad):
+riavvolgi la corda e recupera il compagno."
+font_size = 48
+outline_size = 14
+
 [node name="Checkpoint" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16)
 script = ExtResource("3_checkpoint")

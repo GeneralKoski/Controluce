@@ -1,0 +1,64 @@
+[gd_resource type="Theme" load_steps=5 format=3 uid="uid://cl0uitheme001"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn"]
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+bg_color = Color(0.09, 0.09, 0.15, 0.88)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+border_width_bottom = 2
+border_color = Color(0.4, 0.25, 0.16, 0.6)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+bg_color = Color(0.16, 0.12, 0.16, 0.92)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+border_width_bottom = 2
+border_color = Color(0.95, 0.55, 0.3, 0.9)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+bg_color = Color(0.05, 0.05, 0.09, 0.95)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+border_width_bottom = 2
+border_color = Color(0.95, 0.55, 0.3, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_focus"]
+draw_center = false
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.7, 0.4, 0.8)
+
+[resource]
+default_font_size = 28
+Button/colors/font_color = Color(0.93, 0.9, 0.95, 1)
+Button/colors/font_hover_color = Color(1, 0.85, 0.6, 1)
+Button/colors/font_pressed_color = Color(1, 0.75, 0.45, 1)
+Button/colors/font_disabled_color = Color(0.5, 0.48, 0.55, 1)
+Button/styles/normal = SubResource("StyleBoxFlat_btn")
+Button/styles/hover = SubResource("StyleBoxFlat_btn_hover")
+Button/styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+Button/styles/focus = SubResource("StyleBoxFlat_btn_focus")
+Button/styles/disabled = SubResource("StyleBoxFlat_btn")

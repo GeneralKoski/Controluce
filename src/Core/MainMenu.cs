@@ -15,6 +15,7 @@ public partial class MainMenu : Control
     {
         Input.MouseMode = Input.MouseModeEnum.Visible;
         Settings.Load();
+        Settings.ApplyWindowMode();
         Progress.Load();
 
         _home = GetNode<Control>("Home");
@@ -115,6 +116,14 @@ public partial class MainMenu : Control
         var stick = GetNode<HSlider>("Options/StickRow/Stick");
         stick.Value = Settings.StickSpeed;
         stick.ValueChanged += value => Settings.StickSpeed = (float)value;
+
+        var fullscreen = GetNode<CheckBox>("Options/Fullscreen");
+        fullscreen.ButtonPressed = Settings.Fullscreen;
+        fullscreen.Toggled += pressed =>
+        {
+            Settings.Fullscreen = pressed;
+            Settings.ApplyWindowMode();
+        };
 
         var respawn = GetNode<CheckBox>("Options/RespawnBoth");
         respawn.ButtonPressed = Settings.RespawnBoth;

@@ -9,9 +9,7 @@
 [ext_resource type="Script" path="res://src/Core/PauseMenu.cs" id="9_pause"]
 [ext_resource type="Script" path="res://src/Net/NetworkManager.cs" id="10_net"]
 [ext_resource type="Script" path="res://src/Player/PartnerIndicator.cs" id="11_partner"]
-
-[sub_resource type="Theme" id="Theme_ui"]
-default_font_size = 28
+[ext_resource type="Theme" uid="uid://cl0uitheme001" path="res://assets/ui_theme.tres" id="12_theme"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.055, 0.075, 0.16, 1)
@@ -226,7 +224,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = SubResource("Theme_ui")
+theme = ExtResource("12_theme")
 script = ExtResource("9_pause")
 Game = NodePath("../..")
 
