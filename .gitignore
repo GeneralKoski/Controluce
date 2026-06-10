@@ -1,7 +1,8 @@
 # Godot
 .godot/
 *.translation
-export_presets.cfg
+# export_presets.cfg è versionato di proposito: niente credenziali dentro,
+# solo i preset desktop (le identità di firma vanno tenute fuori dal repo).
 
 # .NET
 bin/

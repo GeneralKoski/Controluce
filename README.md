@@ -73,6 +73,17 @@ SSAO, nebbia, ombre morbide) con blocchi emissivi e geometria fantasma
 fresnel, skin procedurali con scambio ruoli, indicatore del partner fuori
 vista (freccia sul bordo, sagoma "a raggi X" dietro i muri).
 
+## Export
+
+Preset desktop pronti in `export_presets.cfg` (macOS universal, Windows
+x86_64, Linux x86_64). Servono i template di export di Godot 4.6
+(Editor → Manage Export Templates), poi:
+
+```bash
+mkdir -p build
+godot-mono --headless --path . --export-release "macOS" build/Controluce.zip
+```
+
 ## Level design
 
 Per prototipare una stanza nuova in pochi minuti:
