@@ -181,7 +181,7 @@ public partial class GameManager : Node
         await ToSignal(tween, Tween.SignalName.Finished);
     }
 
-    private void ShowBanner(string text)
+    public void ShowBanner(string text)
     {
         GD.Print(text);
         if (Banner != null)
@@ -189,6 +189,12 @@ public partial class GameManager : Node
             Banner.Text = text;
             Banner.Visible = true;
         }
+    }
+
+    public void HideBanner()
+    {
+        if (Banner != null)
+            Banner.Visible = false;
     }
 
     private void OnCheckpointActivated(Checkpoint checkpoint)

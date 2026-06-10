@@ -77,6 +77,10 @@ public partial class NetworkManager : Node
             }
             Multiplayer.MultiplayerPeer = peer;
             GD.Print($"Server Controluce in ascolto sulla porta {port}");
+            Game?.ShowBanner($"In attesa dell'ospite sulla porta {port}...");
+            Multiplayer.PeerConnected += _ => Game?.HideBanner();
+            Multiplayer.PeerDisconnected += _ =>
+                Game?.ShowBanner($"Ospite disconnesso: in attesa sulla porta {port}...");
 
             // P2 è il giocatore remoto: niente input locale.
             Player2?.GetNodeOrNull("PlayerInput")?.QueueFree();
@@ -102,9 +106,11 @@ public partial class NetworkManager : Node
             }
             Multiplayer.MultiplayerPeer = peer;
             GD.Print($"Connessione a {host}:{port}...");
+            Game?.ShowBanner($"Connessione a {host}:{port}...");
             Multiplayer.ConnectedToServer += () =>
             {
                 GD.Print("Connesso al server");
+                Game?.HideBanner();
                 // L'ospite gioca P2: annuncia la propria skin P2 al server.
                 RpcId(1, MethodName.AnnounceSkin, Settings.SkinP2);
             };
