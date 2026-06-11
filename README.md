@@ -62,10 +62,12 @@ In alternativa: variabili d'ambiente `CONTROLUCE_MODE` (server/client),
 - [x] M11 — Refactor authoritative
 - [x] M12 — Online co-op (server authoritative)
 
-Extra oltre le milestone: progressione su 5 stanze con transizioni (la
+Extra oltre le milestone: progressione su 6 stanze con transizioni (la
 quarta, "Il pendolo", è costruita su dondolio e salto da appeso; la quinta,
 "La porta sul vuoto", inverte i ruoli e aggiunge pedana-porta e zattera
-mobile), pedane a
+mobile; la sesta, "Il traghettatore", chiude con ascensore a pedana,
+discesa sincronizzata su percorsi asimmetrici e pedana a due giocatori
+con porta a tempo), pedane a
 peso, piattaforme mobili/porte/ascensori, blocchi a fase alternante, tira-corda
 con feedback, dondolio controllabile e salto da appeso, coyote time + jump
 buffer, camera orbitale con occlusione, menu principale con lobby online,
@@ -139,6 +141,7 @@ godot-mono --headless --path . scenes/tests/test_progression.tscn
 godot-mono --headless --path . scenes/tests/test_skins.tscn
 godot-mono --headless --path . scenes/tests/test_room04.tscn
 godot-mono --headless --path . scenes/tests/test_room05.tscn
+godot-mono --headless --path . scenes/tests/test_room06.tscn
 ```
 
 Test di rete (due processi su loopback):

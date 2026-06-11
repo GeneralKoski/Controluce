@@ -19,7 +19,7 @@ run() {
 }
 
 echo "== Test headless =="
-for t in phases rope counterweight exitzone checkpoint pull swing mechanics progression skins room04 room05; do
+for t in phases rope counterweight exitzone checkpoint pull swing mechanics progression skins room04 room05 room06; do
     run "$t"
 done
 

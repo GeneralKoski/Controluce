@@ -50,6 +50,11 @@ public static class RoomMood
             new Color(0.70f, 0.62f, 0.78f), 0.85f, 3f,
             new Color(0.16f, 0.16f, 0.28f), 0.013f,
             new Color(0.35f, 0.40f, 0.75f), 1.7f),
+        // Stanza 6 — prima dell'alba: buio freddo, l'orizzonte si rischiara.
+        new(new Color(0.015f, 0.02f, 0.07f), new Color(0.22f, 0.28f, 0.46f),
+            new Color(0.62f, 0.68f, 0.92f), 0.8f, 2f,
+            new Color(0.12f, 0.14f, 0.24f), 0.014f,
+            new Color(0.38f, 0.44f, 0.80f), 1.6f),
     ];
 
     public static void Apply(Node3D world, int roomIndex)

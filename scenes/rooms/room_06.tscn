@@ -1,0 +1,160 @@
+[gd_scene load_steps=8 format=3 uid="uid://cl0room060001"]
+
+[ext_resource type="Script" path="res://src/Level/PhaseBlock.cs" id="1_block"]
+[ext_resource type="Script" path="res://src/Level/ExitZone.cs" id="2_exit"]
+[ext_resource type="Script" path="res://src/Level/Checkpoint.cs" id="3_checkpoint"]
+[ext_resource type="Script" path="res://src/Level/WeightPlate.cs" id="4_plate"]
+[ext_resource type="Script" path="res://src/Level/MovingPlatform.cs" id="5_mover"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_exit"]
+size = Vector3(6, 3, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_checkpoint"]
+size = Vector3(8, 3, 3)
+
+[node name="Room06" type="Node3D"]
+
+[node name="SpawnA" type="Marker3D" parent="." groups=["spawn_a"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1, -2)
+
+[node name="SpawnB" type="Marker3D" parent="." groups=["spawn_b"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1, -2)
+
+[node name="Start" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -3)
+script = ExtResource("1_block")
+BlockPhase = 2
+Size = Vector3(8, 0.5, 6)
+
+[node name="Hint1" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -5)
+pixel_size = 0.012
+billboard = 1
+modulate = Color(1, 0.92, 0.8, 0.92)
+outline_modulate = Color(0.2, 0.08, 0.02, 0.9)
+text = "La pedana fa salire l'ascensore:
+chi resta a terra solleva il compagno."
+font_size = 48
+outline_size = 14
+
+[node name="PlateAvvio" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -4.5)
+script = ExtResource("4_plate")
+Targets = [NodePath("../Ascensore")]
+
+[node name="Ascensore" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.25, -7)
+script = ExtResource("5_mover")
+Offset = Vector3(0, 2.75, 0)
+Speed = 1.5
+BlockPhase = 2
+Size = Vector3(3, 0.5, 3)
+
+[node name="LedgeAlta" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2.5, -13.5)
+script = ExtResource("1_block")
+BlockPhase = 2
+Size = Vector3(3, 0.5, 10)
+
+[node name="ViaRossa" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, -0.25, -11)
+script = ExtResource("1_block")
+BlockPhase = 1
+Size = Vector3(2, 0.5, 10)
+
+[node name="Dock" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, -0.25, -17)
+script = ExtResource("1_block")
+BlockPhase = 2
+Size = Vector3(3, 0.5, 3)
+
+[node name="Checkpoint1" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -17)
+script = ExtResource("3_checkpoint")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Checkpoint1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape3D_checkpoint")
+
+[node name="SpawnA" type="Marker3D" parent="Checkpoint1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 3.75, 1)
+
+[node name="SpawnB" type="Marker3D" parent="Checkpoint1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Hint2" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, -17.5)
+pixel_size = 0.012
+billboard = 1
+modulate = Color(1, 0.92, 0.8, 0.92)
+outline_modulate = Color(0.2, 0.08, 0.02, 0.9)
+text = "Scendete insieme: la corda è corta.
+Il blu per i gradini, il rosso col traghetto."
+font_size = 48
+outline_size = 14
+
+[node name="Ponte" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, -0.1, -20)
+script = ExtResource("5_mover")
+Offset = Vector3(0, 0, -2.5)
+Speed = 1.5
+Autonomous = true
+PauseAtEnds = 1.5
+BlockPhase = 2
+Size = Vector3(2.5, 0.5, 2.5)
+
+[node name="ScalaBlu1" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.6, -19.8)
+script = ExtResource("1_block")
+BlockPhase = 0
+Size = Vector3(3, 0.5, 2)
+
+[node name="ScalaBlu2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.7, -21.8)
+script = ExtResource("1_block")
+BlockPhase = 0
+Size = Vector3(3, 0.5, 2)
+
+[node name="Approdo" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -26.5)
+script = ExtResource("1_block")
+BlockPhase = 2
+Size = Vector3(10, 0.5, 8)
+
+[node name="Hint3" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, -27.5)
+pixel_size = 0.012
+billboard = 1
+modulate = Color(1, 0.92, 0.8, 0.92)
+outline_modulate = Color(0.2, 0.08, 0.02, 0.9)
+text = "Insieme sulla pedana, poi di corsa:
+la porta non aspetta."
+font_size = 48
+outline_size = 14
+
+[node name="PlateFinale" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -28.5)
+script = ExtResource("4_plate")
+RequiredPlayers = 2
+Targets = [NodePath("../Porta")]
+
+[node name="Porta" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, -31.2)
+script = ExtResource("5_mover")
+Offset = Vector3(0, -3.3, 0)
+Speed = 2.0
+BlockPhase = 2
+Size = Vector3(10, 3, 0.5)
+
+[node name="Uscita" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -32.5)
+script = ExtResource("1_block")
+BlockPhase = 2
+Size = Vector3(6, 0.5, 4)
+
+[node name="ExitZone" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, -33.5)
+script = ExtResource("2_exit")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ExitZone"]
+shape = SubResource("BoxShape3D_exit")
