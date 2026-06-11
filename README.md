@@ -72,8 +72,10 @@ buffer, camera orbitale con occlusione, menu principale con lobby online,
 opzioni e salvataggio progressi, menu pausa, musica ambient, occhi/particelle
 sui player e griglia procedurale, ambiente "controluce" (sole basso, glow,
 SSAO, nebbia, ombre morbide) con blocchi emissivi e geometria fantasma
-fresnel, skin procedurali con scambio ruoli, indicatore del partner fuori
-vista (freccia sul bordo, sagoma "a raggi X" dietro i muri).
+fresnel, palette che racconta il viaggio (alba → mattino → tramonto →
+crepuscolo → notte lungo le cinque stanze), skin procedurali con scambio
+ruoli, indicatore del partner fuori vista (freccia sul bordo, sagoma
+"a raggi X" dietro i muri).
 
 ## Export
 

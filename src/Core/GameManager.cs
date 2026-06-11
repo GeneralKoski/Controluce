@@ -88,6 +88,9 @@ public partial class GameManager : Node
         RoomSlot.AddChild(_currentRoom);
         _activeCheckpoint = null;
 
+        if (RoomSlot.GetParent() is Node3D world)
+            RoomMood.Apply(world, index);
+
         foreach (Node node in GetTree().GetNodesInGroup("exit_zone"))
         {
             if (node is ExitZone exit)
