@@ -91,12 +91,45 @@ public partial class MainMenu : Control
         }
         p1.Selected = Mathf.Clamp(Settings.SkinP1, 0, Player.PlayerSkin.Count - 1);
         p2.Selected = Mathf.Clamp(Settings.SkinP2, 0, Player.PlayerSkin.Count - 1);
-        p1.ItemSelected += index => Settings.SkinP1 = (int)index;
-        p2.ItemSelected += index => Settings.SkinP2 = (int)index;
+
+        // Anteprime 3D affiancate, subito sotto il titolo del pannello.
+        var previews = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center };
+        previews.AddThemeConstantOverride("separation", 40);
+        var previewP1 = new SkinPreview();
+        var previewP2 = new SkinPreview();
+        previews.AddChild(previewP1);
+        previews.AddChild(previewP2);
+        var skinsPanel = GetNode<Control>("Skins");
+        skinsPanel.AddChild(previews);
+        skinsPanel.MoveChild(previews, 1);
+
+        void RefreshPreviews()
+        {
+            Phase phase1 = Settings.SwapRoles ? Phase.Red : Phase.Blue;
+            previewP1.ShowSkin(phase1, Settings.SkinP1);
+            previewP2.ShowSkin(PhaseLayers.Opposite(phase1), Settings.SkinP2);
+        }
+
+        p1.ItemSelected += index =>
+        {
+            Settings.SkinP1 = (int)index;
+            RefreshPreviews();
+        };
+        p2.ItemSelected += index =>
+        {
+            Settings.SkinP2 = (int)index;
+            RefreshPreviews();
+        };
 
         var swap = GetNode<CheckBox>("Skins/SwapRoles");
         swap.ButtonPressed = Settings.SwapRoles;
-        swap.Toggled += pressed => Settings.SwapRoles = pressed;
+        swap.Toggled += pressed =>
+        {
+            Settings.SwapRoles = pressed;
+            RefreshPreviews();
+        };
+
+        RefreshPreviews();
     }
 
     private void SetupOptions()

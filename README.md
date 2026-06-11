@@ -22,8 +22,8 @@ godot-mono --path .
 
 Dal menu: **Gioca** (split-screen), **Continua** (riprende dall'ultima stanza
 raggiunta, salvata in `user://save.cfg`), **Online** (ospita o unisciti via
-IP/porta), **Personaggi** (skin procedurali separate per P1 e P2 e scambio
-ruoli blu/rosso), **Opzioni** (volume, sensibilità mouse/stick, schermo intero,
+IP/porta), **Personaggi** (skin procedurali separate per P1 e P2 con anteprima 3D
+e scambio ruoli blu/rosso), **Opzioni** (volume, sensibilità mouse/stick, schermo intero,
 modalità respawn) — tutto salvato in `user://settings.cfg`.
 
 Online l'aspetto è concordato: l'host detta la propria skin P1 e lo scambio

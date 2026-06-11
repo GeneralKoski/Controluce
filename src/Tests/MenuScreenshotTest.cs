@@ -9,6 +9,19 @@ public partial class MenuScreenshotTest : Node
 
     public override void _Ready()
     {
+        // CONTROLUCE_SHOT_SKINS="n,m" per fotografare skin diverse.
+        string skins = OS.GetEnvironment("CONTROLUCE_SHOT_SKINS");
+        if (skins.Length > 0)
+        {
+            string[] parts = skins.Split(',');
+            if (parts.Length == 2 && int.TryParse(parts[0], out int s1) && int.TryParse(parts[1], out int s2))
+            {
+                Core.Settings.Load();
+                Core.Settings.SkinP1 = s1;
+                Core.Settings.SkinP2 = s2;
+            }
+        }
+
         var menu = GD.Load<PackedScene>("res://scenes/menu.tscn").Instantiate();
         AddChild(menu);
 
