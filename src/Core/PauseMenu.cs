@@ -14,6 +14,7 @@ public partial class PauseMenu : Control
         GetNode<Button>("Panel/VBox/Restart").Pressed += OnRestart;
         GetNode<Button>("Panel/VBox/Menu").Pressed += OnMainMenu;
         GetNode<Button>("Panel/VBox/Quit").Pressed += () => GetTree().Quit();
+        UiSounds.Attach(this);
     }
 
     public override void _UnhandledInput(InputEvent @event)

@@ -53,6 +53,16 @@ public partial class MainMenu : Control
             Settings.Save();
             ShowPanel(_home);
         };
+
+        UiSounds.Attach(this);
+
+        var music = new AudioStreamPlayer
+        {
+            Stream = AudioSynth.AmbientPad(),
+            VolumeDb = -24f,
+        };
+        AddChild(music);
+        music.Play();
     }
 
     private void StartGame(string? mode, int startRoom)
