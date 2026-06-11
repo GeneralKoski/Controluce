@@ -75,7 +75,8 @@ SSAO, nebbia, ombre morbide) con blocchi emissivi e geometria fantasma
 fresnel, palette che racconta il viaggio (alba → mattino → tramonto →
 crepuscolo → notte lungo le cinque stanze), skin procedurali con scambio
 ruoli, indicatore del partner fuori vista (freccia sul bordo, sagoma
-"a raggi X" dietro i muri).
+"a raggi X" dietro i muri), schermata di finale al completamento
+dell'ultima stanza (anche per l'ospite online).
 
 ## Export
 

@@ -95,6 +95,9 @@ public partial class NetworkManager : Node
 
             // All'ingresso dell'ospite gli si comunicano skin e ruoli correnti.
             Multiplayer.PeerConnected += _ => SendAppearance();
+
+            if (Game != null)
+                Game.GameCompleted += () => Rpc(MethodName.RemoteFinale);
         }
         else
         {
@@ -233,6 +236,19 @@ public partial class NetworkManager : Node
     {
         if (_mode == Mode.Client)
             Game?.ApplyAppearance(skin1, skin2, swapRoles);
+    }
+
+    // Il server annuncia il completamento del gioco: il client mostra il
+    // banner e poi la stessa schermata finale, con lo stesso ritmo.
+    [Rpc(MultiplayerApi.RpcMode.Authority, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private async void RemoteFinale()
+    {
+        if (_mode != Mode.Client || Game == null)
+            return;
+
+        Game.ShowBanner("Hai completato Controluce!");
+        await ToSignal(GetTree().CreateTimer(2.5), SceneTreeTimer.SignalName.Timeout);
+        Game.ShowFinale();
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]

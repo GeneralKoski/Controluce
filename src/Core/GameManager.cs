@@ -8,6 +8,7 @@ namespace Controluce.Core;
 public partial class GameManager : Node
 {
     [Signal] public delegate void RoomLoadedEventHandler(int index);
+    [Signal] public delegate void GameCompletedEventHandler();
 
     [Export] public PlayerController? Player1 { get; set; }
     [Export] public PlayerController? Player2 { get; set; }
@@ -162,7 +163,13 @@ public partial class GameManager : Node
         fanfare.Finished += fanfare.QueueFree;
         fanfare.Play();
         if (isLast)
+        {
+            _transitioning = true;
+            EmitSignal(SignalName.GameCompleted);
+            await ToSignal(GetTree().CreateTimer(2.5), SceneTreeTimer.SignalName.Timeout);
+            ShowFinale();
             return;
+        }
 
         _transitioning = true;
         await ToSignal(GetTree().CreateTimer(1.2), SceneTreeTimer.SignalName.Timeout);
@@ -192,6 +199,17 @@ public partial class GameManager : Node
             Banner.Text = text;
             Banner.Visible = true;
         }
+    }
+
+    // Schermata finale sopra l'HUD; richiamabile anche dal layer di rete
+    // quando il server annuncia il completamento al client.
+    public void ShowFinale()
+    {
+        if (Banner?.GetParent() is not Node ui || ui.HasNode("Finale"))
+            return;
+
+        HideBanner();
+        ui.AddChild(new FinaleScreen { Name = "Finale" });
     }
 
     public void HideBanner()

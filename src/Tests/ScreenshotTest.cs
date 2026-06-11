@@ -33,6 +33,10 @@ public partial class ScreenshotTest : Node
         if (_frames == 5 && int.TryParse(OS.GetEnvironment("CONTROLUCE_SHOT_ROOM"), out int room) && room > 0)
             GetNode<Core.GameManager>("Main").LoadRoom(room);
 
+        // CONTROLUCE_SHOT_FINALE=1 per fotografare la schermata di fine gioco.
+        if (_frames == 5 && OS.GetEnvironment("CONTROLUCE_SHOT_FINALE") == "1")
+            GetNode<Core.GameManager>("Main").ShowFinale();
+
         // CONTROLUCE_SHOT_SPREAD=1: porta P2 fuori dalla visuale di P1
         // (camera girata dall'altra parte) per vedere l'indicatore partner.
         if (_frames == 100 && OS.GetEnvironment("CONTROLUCE_SHOT_SPREAD") == "1")
