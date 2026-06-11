@@ -83,8 +83,8 @@ dell'ultima stanza (anche per l'ospite online).
 ## Export
 
 Preset desktop pronti in `export_presets.cfg` (macOS universal, Windows
-x86_64, Linux x86_64). Servono i template di export di Godot 4.6
-(Editor → Manage Export Templates), poi:
+x86_64, Linux x86_64); l'export macOS è provato e funzionante. Servono i
+template di export di Godot 4.6 (Editor → Manage Export Templates), poi:
 
 ```bash
 mkdir -p build
